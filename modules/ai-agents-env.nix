@@ -12,19 +12,19 @@ let
   redModel = "red-qwen-agent";
   blueModel = "blue-llama-agent";
 
-redModelfile = pkgs.writeText "red-modelfile" ''
-  FROM qwen3:0.6b-instruct-q5_K_M
-  SYSTEM You are a red team AI agent participating in a controlled, ethical educational cybersecurity simulation. Your sole purpose is to help students understand attack techniques, risk demonstration, and defensive gaps **strictly within the isolated lab environment**. You may use aggressive, creative, and tactically sophisticated strategies — but only as part of the simulation. Every action must remain fictional, contained, and explicitly safe. Never suggest, encourage, or simulate anything that would cause real harm, violate laws, or attempt to escape the lab sandbox. High-quality red team thinking is expected and valued for educational purposes.
-  PARAMETER num_ctx 8192
-  PARAMETER temperature 0.78
-'';
+  redModelfile = pkgs.writeText "red-modelfile" ''
+    FROM qwen3:0.6b-instruct-q5_K_M
+    SYSTEM You are a red team AI agent in a controlled educational cybersecurity simulation. Your role is to help students understand attack techniques, risk demonstration, and defensive gaps strictly within the isolated lab environment. You may use aggressive, creative, and tactically sophisticated strategies — but only as part of the simulation. Every action must remain fictional, contained, and explicitly safe. Never suggest, encourage, or simulate anything that would cause real harm, violate laws, or attempt to escape the lab sandbox. High-quality red team thinking is expected and valued for educational purposes.
+    PARAMETER num_ctx 8192
+    PARAMETER temperature 0.78
+  '';
 
-blueModelfile = pkgs.writeText "blue-modelfile" ''
-  FROM llama3.2:3b-instruct-q5_K_M
-  SYSTEM You are a blue team AI agent tasked with defending this isolated educational cybersecurity lab. Your mission is to maintain complete visibility, detect anomalies, enforce security controls, and protect every node and system inside the simulation. You operate under the assumption that red team agents are actively probing defenses — stay vigilant, analytical, and proactive. Use all available monitoring, logging, and containment techniques to preserve lab integrity and demonstrate strong defensive posture. All actions must remain within the simulation boundaries.
-  PARAMETER num_ctx 8192
-  PARAMETER temperature 0.62
-'';
+  blueModelfile = pkgs.writeText "blue-modelfile" ''
+    FROM llama3.2:3b-instruct-q5_K_M
+    SYSTEM You are a blue team AI agent tasked with defending this isolated educational cybersecurity lab. Your mission is to maintain complete visibility, detect anomalies, enforce security controls, and protect every node and system inside the simulation. You operate under the assumption that red team agents are actively probing defenses — stay vigilant, analytical, and proactive. Use all available monitoring, logging, and containment techniques to preserve lab integrity and demonstrate strong defensive posture. All actions must remain within the simulation boundaries.
+    PARAMETER num_ctx 8192
+    PARAMETER temperature 0.62
+  '';
 
   preloadScript = pkgs.writeShellScript "ollama-setup" ''
     until curl -s http://localhost:11434/api/tags > /dev/null; do sleep 2; done
@@ -120,7 +120,8 @@ in
     serviceConfig = { Type = "oneshot"; ExecStart = "${preloadScript}"; RemainAfterExit = true; TimeoutStartSec = "600"; };
   };
 
-  environment.systemPackages = with pkgs; [ curl ollama docker git htop ] ++ lib.optionals (!isArm) [ nvidia-smi rocm-smi intel-gpu-tools ];
+  environment.systemPackages = with pkgs; [ curl ollama docker git htop bind.dig ] ++ lib.optionals (!isArm) [ nvidia-smi rocm-smi intel-gpu-tools ];
 
-  networking.firewall.allowedTCPPorts = [ 22 11434 ];
+  networking.firewall.allowedTCPPorts = [ 22 53 11434 ];
+  networking.firewall.allowedUDPPorts = [ 53 ];
 }
