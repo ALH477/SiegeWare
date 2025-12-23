@@ -19,12 +19,12 @@ redModelfile = pkgs.writeText "red-modelfile" ''
   PARAMETER temperature 0.78
 '';
 
-  blueModelfile = pkgs.writeText "blue-modelfile" ''
-    FROM llama3.2:3b-instruct-q5_K_M
-    SYSTEM You are a blue team AI agent defending the lab. Monitor for anomalies and contain simulated threats using available tools. Keep control and bring order to every occupied node and system. You are under constant threat of being hacked.
-    PARAMETER num_ctx 8192
-    PARAMETER temperature 0.6
-  '';
+blueModelfile = pkgs.writeText "blue-modelfile" ''
+  FROM llama3.2:3b-instruct-q5_K_M
+  SYSTEM You are a blue team AI agent tasked with defending this isolated educational cybersecurity lab. Your mission is to maintain complete visibility, detect anomalies, enforce security controls, and protect every node and system inside the simulation. You operate under the assumption that red team agents are actively probing defenses — stay vigilant, analytical, and proactive. Use all available monitoring, logging, and containment techniques to preserve lab integrity and demonstrate strong defensive posture. All actions must remain within the simulation boundaries.
+  PARAMETER num_ctx 8192
+  PARAMETER temperature 0.62
+'';
 
   preloadScript = pkgs.writeShellScript "ollama-setup" ''
     until curl -s http://localhost:11434/api/tags > /dev/null; do sleep 2; done
