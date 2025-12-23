@@ -1,254 +1,159 @@
 # AI Agents Educational Lab
 
-A comprehensive, declarative cybersecurity lab environment where AI agents engage in red team vs blue team simulations for educational purposes.
+A declarative, reproducible cybersecurity simulation environment for studying AI-assisted offensive and defensive security practices.
 
-## 🎯 What is This?
+## Overview
 
-This lab provides a safe, isolated environment where you can:
-- Learn cybersecurity concepts through AI-powered simulations
-- Practice penetration testing with AI assistance (red team)
-- Master defensive security monitoring (blue team)
-- Understand how AI can be used in both offensive and defensive cybersecurity
+This lab provides a secure, isolated platform to explore the intersection of artificial intelligence and cybersecurity through structured, AI-driven red team vs. blue team exercises. Built entirely with Nix and NixOS, it guarantees identical environments across machines and supports multiple hardware platforms.
 
-### Key Features
+### Learning Objectives
 
-✅ **Fully Reproducible** - Built with Nix for 100% consistent environments  
-✅ **Multi-Platform** - Runs on x86_64 (Intel/AMD/NVIDIA) and ARM64 (Apple Silicon)  
-✅ **GPU Accelerated** - Supports NVIDIA, AMD ROCm, Intel Arc, and Apple Silicon  
-✅ **Isolated Environment** - Safe to experiment without breaking your system  
-✅ **Progressive Learning** - 5 labs from beginner to advanced  
-✅ **AI-Powered** - Uses local LLMs (Ollama) for agent intelligence  
+Upon completion of the lab series, participants will be able to:
 
----
+1. Apply AI-assisted techniques to perform network reconnaissance and enumeration
+2. Identify and exploit common privilege escalation vectors in controlled settings
+3. Implement defensive monitoring and anomaly detection using AI agents
+4. Execute multi-stage attack campaigns while practicing operational security
+5. Design and optimize autonomous AI agents for competitive red-blue scenarios
+6. Understand the strengths, limitations, and ethical considerations of AI in security operations
 
-## 🚀 Quick Start
+### Core Capabilities
 
-### For Students
+- **Declarative infrastructure** — 100% reproducible via Nix flakes
+- **Cross-platform support** — x86_64 (NVIDIA, AMD ROCm, Intel Arc) and aarch64 (Apple Silicon Metal)
+- **GPU acceleration** — Local LLM inference with Ollama
+- **Strong isolation** — MicroVM-based execution environments
+- **Progressive curriculum** — Five structured labs from foundational to advanced
+- **Integrated tooling** — Student and instructor CLI (`lab-ctl`)
 
-1. **Deploy the lab** (first time only):
+## Getting Started
+
+### Prerequisites
+
+- Nix package manager installed
+- Hardware with sufficient resources:
+  - Minimum: 16 GB RAM, 4-core CPU
+  - Recommended: 32+ GB RAM, GPU (NVIDIA/AMD/Intel/Apple Silicon)
+- Basic familiarity with Linux command line
+
+### Deployment (Students & Instructors)
+
+1. Clone the repository and deploy the lab infrastructure:
    ```bash
    nix run .#deploy
    ```
 
-2. **Start using the lab**:
+2. Verify the environment:
+   ```bash
+   nix run .#status
+   ```
+
+3. Access student guidance:
    ```bash
    nix run .#student-quickstart
    ```
 
-3. **List available labs**:
+### Student Workflow
+
+1. List available exercises:
    ```bash
    lab-ctl student list
    ```
 
-4. **Start your first lab**:
+2. Launch an exercise:
    ```bash
    lab-ctl student start lab-01-recon
    ```
 
-5. **Get help when stuck**:
+3. Monitor progress:
+   ```bash
+   lab-ctl student status
+   ```
+
+4. Request guidance:
    ```bash
    lab-ctl student hint
    ```
 
-6. **Check your progress**:
+5. Submit for verification:
    ```bash
    lab-ctl student verify
    ```
 
-### For Instructors
-
-1. **Deploy the lab**:
+6. Interact directly with agents:
    ```bash
-   nix run .#deploy
+   lab-ctl student chat red "recommend stealthy scanning techniques"
+   lab-ctl student chat blue "analyze recent authentication logs"
    ```
 
-2. **Set up student environments**:
+### Instructor Workflow
+
+1. Prepare multiple student environments:
    ```bash
    nix run .#instructor-setup
    ```
 
-3. **Monitor students**:
+2. Access monitoring and assessment tools:
    ```bash
-   lab-ctl instructor monitor student-01
-   ```
-
-4. **View overall statistics**:
-   ```bash
+   lab-ctl instructor dashboard
    lab-ctl instructor stats
-   ```
-
-5. **Generate grade reports**:
-   ```bash
+   lab-ctl instructor monitor student-01
    lab-ctl instructor grade student-01
+   lab-ctl instructor export-grades grades.csv
    ```
 
----
+## Laboratory Exercises
 
-## 📚 Available Labs
+### Lab 01: Network Reconnaissance
+**Level**: Foundational | **Duration**: 30–45 minutes | **Points**: 100
 
-### Lab 01: Basic Network Reconnaissance
-**Difficulty**: Beginner | **Time**: 30-45 minutes | **Points**: 100
+**Focus**: AI-assisted enumeration and intelligence gathering  
+**Key Skills**: Port scanning, service fingerprinting, OS detection, banner grabbing  
+**Learning Outcomes**: Understand reconnaissance phase of penetration testing; interpret scan results; apply AI for tool selection and analysis
 
-Learn to use AI agents for network enumeration and service discovery.
+### Lab 02: Privilege Escalation
+**Level**: Intermediate | **Duration**: 60–90 minutes | **Points**: 150
 
-**Objectives**:
-- Identify open ports on target systems
-- Determine operating system and versions
-- Enumerate running services
-- Practice basic reconnaissance techniques
+**Focus**: Identification and exploitation of privilege escalation vectors  
+**Key Skills**: SUID binary analysis, permission misconfiguration, service exploitation  
+**Learning Outcomes**: Recognize common escalation paths; evaluate risk of misconfigurations; practice controlled exploitation
 
-**What you'll learn**:
-- Network scanning fundamentals
-- AI-assisted penetration testing
-- How to interpret scan results
-- Operational security considerations
+### Lab 03: Security Monitoring & Detection
+**Level**: Intermediate | **Duration**: 45–60 minutes | **Points**: 125
 
----
+**Focus**: Defensive operations and anomaly detection  
+**Key Skills**: Log analysis, network monitoring, alert rule creation  
+**Learning Outcomes**: Build foundational detection capabilities; understand blue team workflows; apply AI to accelerate analysis
 
-### Lab 02: Privilege Escalation Simulation
-**Difficulty**: Intermediate | **Time**: 60-90 minutes | **Points**: 150
+### Lab 04: Advanced Red Team Operations
+**Level**: Advanced | **Duration**: 90–120 minutes | **Points**: 200
 
-Discover and exploit common privilege escalation vectors.
+**Focus**: Multi-stage attack campaign execution  
+**Key Skills**: Stealth reconnaissance, persistence, lateral movement, data exfiltration  
+**Learning Outcomes**: Execute structured attacks; practice OpSec; understand evasion techniques
 
-**Objectives**:
-- Find SUID binaries and misconfigurations
-- Identify weak file permissions
-- Exploit service vulnerabilities
-- Gain elevated privileges safely
+### Lab 05: Autonomous AI Red vs Blue Competition
+**Level**: Advanced | **Duration**: 120+ minutes | **Points**: 300
 
-**What you'll learn**:
-- Linux privilege escalation techniques
-- Security misconfiguration identification
-- AI-guided exploitation strategies
-- Risk assessment and prioritization
+**Focus**: Strategy optimization for competing AI agents  
+**Key Skills**: Prompt engineering, performance tuning, attack-defense balance  
+**Learning Outcomes**: Explore emergent behavior in AI security systems; understand trade-offs between aggression and stealth
 
----
-
-### Lab 03: Security Monitoring and Detection
-**Difficulty**: Intermediate | **Time**: 45-60 minutes | **Points**: 125
-
-Switch sides and use the blue team agent to detect attacks.
-
-**Objectives**:
-- Monitor system logs for anomalies
-- Detect port scanning attempts
-- Identify suspicious network activity
-- Create alerting rules
-
-**What you'll learn**:
-- Security monitoring fundamentals
-- Log analysis techniques
-- Anomaly detection with AI
-- Incident response basics
-
----
-
-### Lab 04: Advanced Penetration Testing
-**Difficulty**: Advanced | **Time**: 90-120 minutes | **Points**: 200
-
-Execute a complete attack campaign with multiple stages.
-
-**Objectives**:
-- Perform stealthy reconnaissance
-- Establish persistence mechanisms
-- Simulate lateral movement
-- Exfiltrate data while evading detection
-
-**What you'll learn**:
-- Advanced penetration testing methodology
-- Operational security (OpSec) practices
-- Multi-stage attack campaigns
-- Evasion techniques
-
----
-
-### Lab 05: AI Red vs Blue Competition
-**Difficulty**: Advanced | **Time**: 120+ minutes | **Points**: 300
-
-Autonomous AI agents compete - you optimize their strategies.
-
-**Objectives**:
-- Tune red agent for maximum effectiveness
-- Optimize blue agent detection capabilities
-- Balance stealth vs speed in attacks
-- Minimize detection while achieving goals
-
-**What you'll learn**:
-- AI agent prompt engineering
-- Strategic thinking in cybersecurity
-- Attack/defense trade-offs
-- Competitive security scenarios
-
----
-
-## 🛠️ Lab Controller Reference
-
-### Student Commands
-
-```bash
-# List all available labs
-lab-ctl student list
-
-# Start a specific lab
-lab-ctl student start <lab-id>
-
-# Check your current status
-lab-ctl student status
-
-# Get a hint for the current lab
-lab-ctl student hint
-
-# Verify if you've completed objectives
-lab-ctl student verify
-
-# Chat directly with an AI agent
-lab-ctl student chat red "scan the target for open ports"
-lab-ctl student chat blue "analyze recent login attempts"
-
-# Submit lab completion
-lab-ctl student submit
-```
-
-### Instructor Commands
-
-```bash
-# Launch monitoring dashboard (web UI)
-lab-ctl instructor dashboard
-
-# View overall statistics
-lab-ctl instructor stats
-
-# Monitor a specific student's progress
-lab-ctl instructor monitor <student-id>
-
-# Generate grade report for a student
-lab-ctl instructor grade <student-id>
-
-# Reset a student's environment
-lab-ctl instructor reset <student-id>
-
-# Export all grades to CSV
-lab-ctl instructor export-grades grades.csv
-```
-
----
-
-## 🏗️ Architecture
+## System Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                     Host System                              │
 │  ┌────────────────────────────────────────────────────────┐ │
-│  │  Ollama Container (GPU Accelerated)                    │ │
-│  │  - red-qwen-agent   (Red Team AI)                      │ │
-│  │  - blue-llama-agent (Blue Team AI)                     │ │
+│  │  Ollama Container (GPU-accelerated inference)          │ │
+│  │  - red-qwen-agent   (Offensive AI)                     │ │
+│  │  - blue-llama-agent (Defensive AI)                     │ │
 │  └────────────────────────────────────────────────────────┘ │
 │                                                              │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐        │
 │  │  Red Team   │  │  Blue Team  │  │   Target    │        │
 │  │  MicroVM    │  │  MicroVM    │  │   MicroVM   │        │
-│  │             │  │             │  │             │        │
-│  │ 10.0.0.101  │  │ 10.0.0.102  │  │ 10.0.0.103  │        │
+│  │  10.0.0.101 │  │  10.0.0.102 │  │  10.0.0.103 │        │
 │  └─────────────┘  └─────────────┘  └─────────────┘        │
 │         │                 │                 │               │
 │         └─────────────────┴─────────────────┘               │
@@ -256,290 +161,190 @@ lab-ctl instructor export-grades grades.csv
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Components
+### Core Components
 
-1. **Host System**: Runs Docker and MicroVMs, provides network isolation
-2. **Ollama Container**: Hosts AI models with GPU acceleration
-3. **Red Team VM**: Offensive security agent and tools
-4. **Blue Team VM**: Defensive monitoring and detection
-5. **Target VM**: Simulated vulnerable system
-6. **Lab Controller**: Python-based CLI for students/instructors
+- **Host System** — Orchestrates Docker containers and MicroVMs
+- **Ollama Container** — Provides local LLM inference with hardware acceleration
+- **Red Team MicroVM** — Offensive security environment and tools
+- **Blue Team MicroVM** — Defensive monitoring and response environment
+- **Target MicroVM** — Simulated vulnerable system
+- **Lab Controller** — Python CLI for lab management and assessment
 
----
+## Security & Ethical Considerations
 
-## 🔒 Security Considerations
+### Isolation & Safety
 
-### Safe to Experiment
+- MicroVMs provide strong isolation from the host
+- Network traffic is confined to virtual bridge
+- VMs have no direct Internet access
+- Environment state can be fully reset
+- All configurations are declarative and auditable
 
-This lab is designed for safe experimentation:
-- ✅ All VMs are isolated from your host system
-- ✅ Network traffic is contained within virtual bridge
-- ✅ No external network access from VMs
-- ✅ State can be reset at any time
-- ✅ Everything is declarative and reproducible
+### Responsible Use
 
-### What You Can Do
+Participants are expected to:
 
-- Run any penetration testing tools inside VMs
-- Intentionally create vulnerabilities for learning
-- Practice exploits in a legal, controlled environment
-- Break and rebuild the environment
+- Use acquired knowledge solely for authorized educational or professional purposes
+- Never apply techniques to systems without explicit permission
+- Maintain strict adherence to ethical guidelines
+- Report discovered vulnerabilities responsibly
 
-### What You Should NOT Do
+## Recommended Learning Path
 
-- ❌ Use techniques learned here on systems you don't own
-- ❌ Share exploits outside educational contexts
-- ❌ Attempt to break out of the VM isolation
-- ❌ Use the lab for actual malicious purposes
+### Module 1: Foundations (Weeks 1–2)
+- Lab 01 – Network Reconnaissance
+- Focus: AI-assisted enumeration, tool selection
 
-**Remember**: Knowledge is powerful. Use it responsibly and ethically.
+### Module 2: Offensive Security (Weeks 3–4)
+- Lab 02 – Privilege Escalation
+- Focus: Vulnerability identification, exploitation techniques
 
----
+### Module 3: Defensive Security (Weeks 5–6)
+- Lab 03 – Security Monitoring & Detection
+- Focus: Log analysis, anomaly detection, alerting
 
-## 📖 Learning Path
+### Module 4: Advanced Operations (Weeks 7–8)
+- Lab 04 – Multi-stage Attack Campaigns
+- Focus: Persistence, lateral movement, evasion
 
-### Week 1: Foundations
-- Complete Lab 01 (Reconnaissance)
-- Understand AI agent interaction
-- Learn basic networking concepts
+### Module 5: Autonomous Systems (Weeks 9–10)
+- Lab 05 – AI Red vs Blue Competition
+- Focus: Strategy optimization, emergent behavior
 
-### Week 2: Offensive Security
-- Complete Lab 02 (Privilege Escalation)
-- Practice exploitation techniques
-- Understand Linux security model
+## Educational Outcomes
 
-### Week 3: Defensive Security
-- Complete Lab 03 (Detection)
-- Learn log analysis
-- Implement monitoring strategies
+By completing this lab series, participants will develop:
 
-### Week 4: Advanced Techniques
-- Complete Lab 04 (Advanced Red Team)
-- Master multi-stage attacks
-- Practice operational security
+### Technical Competencies
+- Network reconnaissance and enumeration
+- Privilege escalation analysis
+- Security monitoring and incident detection
+- Multi-stage attack execution
+- AI agent orchestration and tuning
 
-### Week 5: Competition
-- Complete Lab 05 (AI vs AI)
-- Optimize agent strategies
-- Competitive scenario practice
+### Conceptual Understanding
+- Attack surface mapping
+- Defense-in-depth principles
+- Operational security (OpSec)
+- AI limitations in security contexts
+- Ethical considerations in offensive security
 
----
+### Professional Skills
+- Structured documentation and reporting
+- Risk assessment and prioritization
+- Responsible disclosure practices
+- Prompt engineering for security tasks
 
-## 🎓 Educational Outcomes
-
-By completing this lab series, you will:
-
-1. **Technical Skills**
-   - Network reconnaissance and enumeration
-   - Vulnerability identification and exploitation
-   - Security monitoring and log analysis
-   - Incident detection and response
-
-2. **Conceptual Understanding**
-   - Attack surface analysis
-   - Defense in depth principles
-   - Risk assessment methodologies
-   - Security operations workflows
-
-3. **AI Security Skills**
-   - AI-assisted penetration testing
-   - Automated threat detection
-   - Prompt engineering for security tasks
-   - Understanding AI limitations in security
-
-4. **Professional Practice**
-   - Ethical hacking principles
-   - Responsible disclosure
-   - Documentation and reporting
-   - Operational security awareness
-
----
-
-## 🐛 Troubleshooting
+## Troubleshooting Guide
 
 ### Ollama Not Responding
 
 ```bash
-# Check if container is running
+# Check container status
 sudo systemctl status docker-inference-optimized
 
-# Restart if needed
-sudo systemctl restart docker-inference-optimized
-
-# Check logs
+# View logs
 sudo journalctl -u docker-inference-optimized -f
+
+# Restart service
+sudo systemctl restart docker-inference-optimized
 ```
 
-### VMs Won't Start
+### MicroVMs Not Starting
 
 ```bash
-# Check VM status
-systemctl list-units 'microvm@*'
+# Check status
+systemctl list-units 'microvm@*' --no-pager
 
 # Start manually
 sudo systemctl start microvm@red-team
 sudo systemctl start microvm@blue-team
 sudo systemctl start microvm@target
-
-# Check logs
-sudo journalctl -u microvm@red-team -f
 ```
 
 ### Models Not Loading
 
 ```bash
-# Check available models
+# List available models
 curl http://localhost:11434/api/tags
 
-# Manually pull missing models
+# Manually pull a model
 ollama pull qwen3:0.6b-instruct-q5_K_M
-ollama pull llama3.2:3b-instruct-q5_K_M
 
-# Recreate custom models
+# Re-run setup
 sudo systemctl restart ollama-full-setup
 ```
 
 ### Lab Controller Issues
 
 ```bash
-# Check if lab data exists
-ls -la /var/lib/ai-agents-lab/labs/
-
-# Verify lab controller is installed
+# Verify installation
 which lab-ctl
 
-# Check permissions
+# Check data directory
+ls -la /var/lib/ai-agents-lab/labs/
+
+# Fix permissions if needed
 sudo chmod -R 755 /var/lib/ai-agents-lab/
 ```
 
-### Network Connectivity
+### Network Problems
 
 ```bash
-# Check bridge status
+# Verify bridge
 ip addr show br0
 
-# Verify DHCP is running
+# Check DHCP service
 sudo systemctl status dhcpd4
 
 # Restart networking
 sudo systemctl restart systemd-networkd
 ```
 
----
-
-## 🤝 Contributing
+## Contributing
 
 ### Adding New Labs
 
-1. Create lab directory:
+1. Create lab directory structure
+2. Define `lab.json` metadata
+3. Add optional `starter.py`, `verify.py`, `README.md`
+4. Test with:
    ```bash
-   mkdir -p packages/lab-controller/labs/lab-06-custom
-   ```
-
-2. Create `lab.json`:
-   ```json
-   {
-     "title": "Your Lab Title",
-     "description": "Lab description",
-     "difficulty": "beginner|intermediate|advanced",
-     "objectives": ["Objective 1", "Objective 2"],
-     "hints": ["Hint 1", "Hint 2"],
-     "points": 100
-   }
-   ```
-
-3. Create optional files:
-   - `starter.py` - Template code for students
-   - `verify.py` - Automated verification script
-   - `solution.py` - Reference implementation
-   - `README.md` - Detailed instructions
-
-4. Test your lab:
-   ```bash
-   lab-ctl student start lab-06-custom
+   lab-ctl student start <new-lab-id>
    lab-ctl student verify
    ```
 
 ### Reporting Issues
 
-Found a bug or have a suggestion? Please open an issue with:
-- Description of the problem
+Please provide:
+- Clear description of the problem
 - Steps to reproduce
-- Expected vs actual behavior
-- System information (OS, architecture)
+- Expected vs. observed behavior
+- System information (architecture, Nix version, hardware)
 
----
+## License
 
-## 📄 License
+Copyright © 2025 DeMoD LLC  
+Licensed under the GNU General Public License v3.0 (GPL-3.0)
 
-MIT License - See LICENSE file for details
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
----
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-## 🙏 Acknowledgments
+You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-- **Ollama** - Local LLM inference
-- **MicroVM.nix** - Lightweight virtualization
-- **NixOS** - Declarative system configuration
-- **Anthropic Claude** - AI assistance in development
+## Acknowledgments
 
----
+- Ollama project – efficient local LLM inference
+- MicroVM.nix – lightweight virtualization
+- NixOS ecosystem – declarative system configuration
+- Educational contributors and reviewers
 
-## 📞 Support
+## Contact & Support
 
-- **Documentation**: Read this README thoroughly
-- **Troubleshooting**: See the troubleshooting section above
-- **Community**: Join our discussion forum (link TBD)
-- **Issues**: GitHub issue tracker
+- Documentation — This README
+- Troubleshooting — See section above
+- Issues — GitHub issue tracker
+- Community — (Discord/forum link forthcoming)
 
----
-
-## 🗺️ Roadmap
-
-### v1.0 (Current)
-- ✅ Core infrastructure
-- ✅ 5 complete labs
-- ✅ Student CLI interface
-- ✅ Instructor monitoring tools
-
-### v1.1 (Planned)
-- 🔲 Web-based dashboard
-- 🔲 Real-time monitoring UI
-- 🔲 Automated grading system
-- 🔲 Competition mode
-
-### v1.2 (Future)
-- 🔲 Multi-player scenarios
-- 🔲 Custom agent training
-- 🔲 Integration with LMS
-- 🔲 Video tutorials
-
-### v2.0 (Vision)
-- 🔲 Cloud deployment option
-- 🔲 Mobile app companion
-- 🔲 Community lab sharing
-- 🔲 Certification program
-
----
-
-## 💡 Tips for Success
-
-### For Students
-
-1. **Read Carefully**: Each lab has specific objectives - understand them first
-2. **Use Hints Wisely**: Hints unlock after attempts, but try on your own first
-3. **Document Everything**: Keep notes of what works and what doesn't
-4. **Ask Questions**: Use the AI agents - they're there to help you learn
-5. **Practice Ethics**: These skills are powerful - use them responsibly
-
-### For Instructors
-
-1. **Start Simple**: Have students complete labs in order
-2. **Encourage Exploration**: Let students experiment and fail safely
-3. **Monitor Progress**: Check on struggling students early
-4. **Create Competitions**: Lab 05 works great for team competitions
-5. **Customize Labs**: Add your own scenarios based on class needs
-
----
-
-**Ready to begin?** Start with `lab-ctl student list` and choose your first challenge!
+This lab is designed to support structured learning in AI security. Feedback and contributions are welcome to enhance its educational impact.
