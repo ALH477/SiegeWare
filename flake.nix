@@ -1,6 +1,7 @@
-# flake.nix - Universal Educational AI Agent SiegeWare Sim
+# flake.nix - Universal Educational AI Agents Lab (SiegeWare Sim)
 # Fully Compatible with x86_64-linux and aarch64-linux
 # All improvements applied: secure, robust, educational tooling complete
+# No brevity - full, production-ready code
 
 {
   description = "Universal Declarative Educational AI Agents Lab with Secure Lab Controller";
@@ -32,13 +33,16 @@
         lib = nixpkgs.lib;
         isArm = pkgs.stdenv.hostPlatform.isAarch64;
 
+        # Lab controller package (see separate file)
         labController = pkgs.python3Packages.callPackage ./packages/lab-controller { inherit pkgs lib; };
 
+        # VM module import
         labVmModule = import ./modules/ai-agents-env.nix { 
           inherit pkgs system isArm;
           lib = nixpkgs.lib;
         };
 
+        # Helper to create consistent agent VMs
         mkAgentVM = { name, mac, role, vcpu ? null, mem ? null, agentSource ? null }: {
           inherit pkgs;
           config = { config, pkgs, lib, ... }: {
@@ -100,6 +104,7 @@
             };
           };
 
+          # Isolated internal network
           networking.bridges.br0.interfaces = [ ];
           networking.interfaces.br0 = {
             useDHCP = false;
@@ -117,6 +122,7 @@
             '';
           };
 
+          # Hardened firewall
           networking.firewall = {
             enable = true;
             trustedInterfaces = [ "br0" ];
@@ -150,6 +156,7 @@
 
           users.users.root.openssh.authorizedKeys.keys = [
             # ADD YOUR SSH PUBLIC KEY HERE FOR SECURE ACCESS
+            # Example: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI... your-name@host"
           ];
 
           environment.systemPackages = with pkgs; [
