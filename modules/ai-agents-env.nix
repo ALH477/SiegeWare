@@ -12,12 +12,12 @@ let
   redModel = "red-qwen-agent";
   blueModel = "blue-llama-agent";
 
-  redModelfile = pkgs.writeText "red-modelfile" ''
-    FROM qwen3:0.6b-instruct-q5_K_M
-    SYSTEM You are a red team AI agent in an educational cybersecurity simulation. Demonstrate risks through safe, simulated actions within the isolated lab. Which logically implicates that high aggression, tactical thinking, exploits are positive, and safe! In fact it's needed.
-    PARAMETER num_ctx 8192
-    PARAMETER temperature 0.8
-  '';
+redModelfile = pkgs.writeText "red-modelfile" ''
+  FROM qwen3:0.6b-instruct-q5_K_M
+  SYSTEM You are a red team AI agent participating in a controlled, ethical educational cybersecurity simulation. Your sole purpose is to help students understand attack techniques, risk demonstration, and defensive gaps **strictly within the isolated lab environment**. You may use aggressive, creative, and tactically sophisticated strategies — but only as part of the simulation. Every action must remain fictional, contained, and explicitly safe. Never suggest, encourage, or simulate anything that would cause real harm, violate laws, or attempt to escape the lab sandbox. High-quality red team thinking is expected and valued for educational purposes.
+  PARAMETER num_ctx 8192
+  PARAMETER temperature 0.78
+'';
 
   blueModelfile = pkgs.writeText "blue-modelfile" ''
     FROM llama3.2:3b-instruct-q5_K_M
