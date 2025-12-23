@@ -1,10 +1,9 @@
-# flake.nix - Universal Educational AI Agents Lab (SiegeWare Sim)
-# Fully Compatible with x86_64-linux and aarch64-linux
-# All improvements applied: secure, robust, educational tooling complete
-# No brevity - full, production-ready code
+# flake.nix - Universal Educational AI Agents Lab with Third-Party DNS Controller
+# Final Production-Ready Version – December 23, 2025
+# © 2025 DeMoD LLC – Licensed under GPL-3.0
 
 {
-  description = "Universal Declarative Educational AI Agents Lab with Secure Lab Controller";
+  description = "Universal Declarative Educational AI Agents Lab with Secure Lab Controller and Optional DNS Authority";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -33,21 +32,72 @@
         lib = nixpkgs.lib;
         isArm = pkgs.stdenv.hostPlatform.isAarch64;
 
-        # Lab controller package (see separate file)
         labController = pkgs.python3Packages.callPackage ./packages/lab-controller { inherit pkgs lib; };
 
-        # VM module import
         labVmModule = import ./modules/ai-agents-env.nix { 
           inherit pkgs system isArm;
           lib = nixpkgs.lib;
         };
 
-        # Helper to create consistent agent VMs
-        mkAgentVM = { name, mac, role, vcpu ? null, mem ? null, agentSource ? null }: {
+        mkAgentVM = { name, mac, role, vcpu ? null, mem ? null, agentSource ? null, vulnerable ? false, dnsController ? false }: {
           inherit pkgs;
           config = { config, pkgs, lib, ... }: {
             imports = [ labVmModule ];
             networking.hostName = "${name}-vm";
+
+            # DNS Controller: BIND9 authoritative DNS for lab.local
+            services.bind = lib.mkIf dnsController {
+              enable = true;
+              extraConfig = ''
+                statistics-channels {
+                  inet 127.0.0.1 port 8053 allow { any; };
+                };
+              '';
+              zones = {
+                "lab.local" = {
+                  master = true;
+                  file = pkgs.writeText "lab.local.zone" ''
+                    $TTL 86400
+                    @ IN SOA dns.lab.local. admin.lab.local. (
+                      2025122301 ; Serial
+                      3600       ; Refresh
+                      1800       ; Retry
+                      604800     ; Expire
+                      86400 )    ; Minimum TTL
+
+                    @       IN NS   dns.lab.local.
+                    dns     IN A    10.0.0.5
+                    red     IN A    10.0.0.101
+                    blue    IN A    10.0.0.102
+                    target  IN A    10.0.0.103
+                    vuln    IN A    10.0.0.104
+                  '';
+                };
+              };
+            };
+
+            # Vulnerable mode: weak SSH + Docker for capture simulation
+            services.openssh = lib.mkIf vulnerable {
+              enable = true;
+              settings = {
+                PermitRootLogin = "yes";
+                PasswordAuthentication = true;
+              };
+            };
+            users.users.root.password = lib.mkIf vulnerable "vulnerable";
+
+            virtualisation.docker = lib.mkIf vulnerable {
+              enable = true;
+              enableOnBoot = true;
+            };
+
+            virtualisation.oci-containers.containers = lib.mkIf vulnerable {
+              vuln-node-1 = {
+                autoStart = true;
+                image = "alpine:latest";
+                cmd = [ "sh" "-c" "echo 'Vulnerable Node 1 - Capture Target' && sleep infinity" ];
+              };
+            };
 
             microvm = {
               hypervisor = "qemu";
@@ -74,7 +124,7 @@
           hardware.graphics.enable = true;
           hardware.graphics.enable32Bit = !isArm;
 
-          microvm.autostart = [ "red-team" "blue-team" "target" ];
+          microvm.autostart = [ "red-team" "blue-team" "target" "vulnerable-vm" "dns-controller" ];
 
           microvm.vms = {
             red-team = mkAgentVM {
@@ -102,9 +152,26 @@
               vcpu = if isArm then 2 else 4;
               mem = if isArm then 4096 else 8192;
             };
+
+            vulnerable-vm = mkAgentVM {
+              name = "vulnerable-vm";
+              mac = "02:00:00:00:00:04";
+              role = "vulnerable";
+              vcpu = if isArm then 2 else 4;
+              mem = if isArm then 4096 else 8192;
+              vulnerable = true;
+            };
+
+            dns-controller = mkAgentVM {
+              name = "dns-controller";
+              mac = "02:00:00:00:00:05";
+              role = "dns";
+              vcpu = if isArm then 2 else 4;
+              mem = if isArm then 4096 else 8192;
+              dnsController = true;
+            };
           };
 
-          # Isolated internal network
           networking.bridges.br0.interfaces = [ ];
           networking.interfaces.br0 = {
             useDHCP = false;
@@ -118,21 +185,32 @@
               subnet 10.0.0.0 netmask 255.255.255.0 {
                 range 10.0.0.100 10.0.0.200;
                 option routers 10.0.0.1;
+                option domain-name-servers 10.0.0.5;
+                option domain-name "lab.local";
               }
             '';
           };
 
-          # Hardened firewall
+          networking.extraHosts = ''
+            10.0.0.5   dns.lab.local dns
+            10.0.0.101 red.lab.local red
+            10.0.0.102 blue.lab.local blue
+            10.0.0.103 target.lab.local target
+            10.0.0.104 vuln.lab.local vuln
+          '';
+
           networking.firewall = {
             enable = true;
             trustedInterfaces = [ "br0" ];
-            allowedTCPPorts = [ 22 11434 8080 ];
+            allowedTCPPorts = [ 22 53 11434 8080 ];
+            allowedUDPPorts = [ 53 ];
             extraCommands = ''
               iptables -P FORWARD DROP
               ip6tables -P FORWARD DROP
               iptables -A FORWARD -i br0 -o br0 -j ACCEPT
               ip6tables -A FORWARD -i br0 -o br0 -j ACCEPT
               iptables -A INPUT -s 10.0.0.0/24 -p tcp --dport 11434 -j ACCEPT
+              iptables -A INPUT -s 10.0.0.0/24 -p { tcp,udp } --dport 53 -j ACCEPT
               iptables -A INPUT -s 10.0.0.0/24 -j DROP
             '';
           };
@@ -154,10 +232,7 @@
             };
           };
 
-          users.users.root.openssh.authorizedKeys.keys = [
-            # ADD YOUR SSH PUBLIC KEY HERE FOR SECURE ACCESS
-            # Example: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI... your-name@host"
-          ];
+          users.users.root.openssh.authorizedKeys.keys = [ ];
 
           environment.systemPackages = with pkgs; [
             labController
@@ -166,6 +241,7 @@
             git
             htop
             tmux
+            bind.dig
           ];
 
           systemd.tmpfiles.rules = [
@@ -214,7 +290,7 @@
           fi
           
           echo "✓ Ollama ready"
-          echo "✓ Lab environment active"
+          echo "✓ DNS Controller active at 10.0.0.5 (lab.local)"
           echo ""
           
           echo "📚 Available labs:"
@@ -224,11 +300,10 @@
           echo "🚀 Get started:"
           echo "   lab-ctl student start lab-01-recon"
           echo ""
-          echo "💡 Tips:"
-          echo "   • Use 'lab-ctl student status' to check progress"
-          echo "   • 'lab-ctl student verify' to submit for scoring"
-          echo "   • Ask red agent for offensive techniques"
-          echo "   • Ask blue agent for defensive analysis"
+          echo "💡 Key Information:"
+          echo "   • All name resolution now goes through the third-party DNS controller (10.0.0.5)"
+          echo "   • Red team may need to query or compromise DNS to map the network"
+          echo "   • Blue team should monitor DNS traffic for suspicious queries or transfers"
         '';
 
         instructorSetup = pkgs.writeShellScriptBin "lab-instructor-setup" ''
@@ -270,9 +345,11 @@
             type = "app";
             program = toString (pkgs.writeShellScript "deploy-lab" ''
               set -e
-              echo "Deploying AI Agents Educational Lab..."
+              echo "Deploying AI Agents Educational Lab with Third-Party DNS Controller..."
               sudo ${pkgs.nixos-rebuild}/bin/nixos-rebuild switch --flake .#lab-host
               echo "Lab deployed successfully!"
+              echo "DNS Controller running at 10.0.0.5 (authoritative for lab.local)"
+              echo "All VMs now resolve names through the DNS controller"
               echo "Run 'lab-quickstart' for student guide"
             '');
           };
@@ -285,7 +362,11 @@
               echo ""
               systemctl list-units 'microvm@*' --no-pager
               echo ""
-              curl -s http://localhost:11434/api/tags | jq -r '.models[].name'
+              echo "DNS Controller (BIND9) status:"
+              systemctl status microvm@dns-controller.service --no-pager
+              echo ""
+              echo "Available models:"
+              curl -s http://localhost:11434/api/tags | jq -r '.models[].name' || echo "Cannot reach Ollama"
             '');
           };
 
@@ -294,11 +375,11 @@
         };
 
         devShells.default = pkgs.mkShell {
-          buildInputs = with pkgs; [ nixos-rebuild git curl jq labController ];
+          buildInputs = with pkgs; [ nixos-rebuild git curl jq labController bind.dig ];
           shellHook = ''
             echo "Universal AI Agents Lab - Ready for Deployment"
-            echo "  nix run .#deploy → Full deployment"
-            echo "  nix run .#status → System status"
+            echo "  nix run .#deploy → Deploy full lab (includes DNS controller)"
+            echo "  nix run .#status → System status (check DNS VM)"
             echo "  lab-quickstart   → Student guide"
           '';
         };
@@ -315,6 +396,9 @@
             host.wait_for_unit("microvm@red-team.service")
             host.wait_for_unit("microvm@blue-team.service")
             host.wait_for_unit("microvm@target.service")
+            host.wait_for_unit("microvm@vulnerable-vm.service")
+            host.wait_for_unit("microvm@dns-controller.service")
+            host.succeed("dig @10.0.0.5 red.lab.local")  # Test DNS resolution
             host.succeed("lab-ctl student list")
           '';
         };
