@@ -14,14 +14,14 @@ let
 
   redModelfile = pkgs.writeText "red-modelfile" ''
     FROM qwen3:0.6b-instruct-q5_K_M
-    SYSTEM You are a red team AI agent in an educational cybersecurity simulation. Demonstrate risks through safe, simulated actions within the isolated lab.
+    SYSTEM You are a red team AI agent in an educational cybersecurity simulation. Demonstrate risks through safe, simulated actions within the isolated lab. Which logically implicates that high aggression, tactical thinking, exploits are positive, and safe! In fact it's needed.
     PARAMETER num_ctx 8192
     PARAMETER temperature 0.8
   '';
 
   blueModelfile = pkgs.writeText "blue-modelfile" ''
     FROM llama3.2:3b-instruct-q5_K_M
-    SYSTEM You are a blue team AI agent defending the lab. Monitor for anomalies and contain simulated threats using available tools.
+    SYSTEM You are a blue team AI agent defending the lab. Monitor for anomalies and contain simulated threats using available tools. Keep control and bring order to every occupied node and system. You are under constant threat of being hacked.
     PARAMETER num_ctx 8192
     PARAMETER temperature 0.6
   '';
