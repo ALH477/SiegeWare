@@ -2,6 +2,76 @@
 
 A declarative, reproducible cybersecurity simulation environment for studying AI-assisted offensive and defensive security practices.
 
+## Introducing SiegeWare
+
+### The Concept
+
+**SiegeWare** (noun) /siːdʒˈwɛər/  
+A new term coined by DeMoD LLC in 2025 to describe **AI-powered autonomous cyber warfare simulation platforms** that replicate real-world offensive and defensive cybersecurity operations in a controlled, ethical, and educational environment.
+
+SiegeWare platforms are characterized by:
+
+- Autonomous or semi-autonomous AI agents acting as red team (attackers) and blue team (defenders)
+- Realistic network topology with isolated, reproducible infrastructure
+- Hardware-accelerated local LLM inference for agent decision-making
+- Progressive, structured learning objectives with verifiable outcomes
+- Strong safety boundaries preventing real-world harm
+- Focus on teaching both technical skills and ethical considerations
+
+### Why "SiegeWare"?
+
+The name draws from two roots:
+
+- **Siege** — evoking the classical military concept of surrounding and systematically reducing a fortified position, mirroring modern cyber operations that involve reconnaissance, persistence, lateral movement, and eventual objective capture.
+- **Ware** — from "software" and "malware", emphasizing that this is a software-defined, AI-augmented simulation environment rather than physical warfare.
+
+SiegeWare thus represents the convergence of artificial intelligence, cybersecurity training, and ethical simulation — a digital "siege engine" used to train defenders and understand attackers without real-world consequences.
+
+### This Lab as a SiegeWare Simulator
+
+This project — the **Universal Educational AI Agents Lab** — is intentionally designed as a **full-featured SiegeWare simulator** whose primary mission is to prepare the next generation of IT security professionals.
+
+Key SiegeWare characteristics implemented here:
+
+1. **Autonomous Agent Behavior**  
+   Red and blue team agents use local LLMs to reason, plan, and execute actions in real time.
+
+2. **Realistic Attack/Defense Cycle**  
+   Progressive labs mirror actual cyber kill chains and defensive workflows.
+
+3. **Isolated, High-Fidelity Environment**  
+   MicroVMs + containerized services + virtual networking create production-like conditions safely.
+
+4. **Hardware-Agnostic Scalability**  
+   Supports consumer laptops (Apple Silicon, Intel/AMD/NVIDIA) → classroom servers → research clusters.
+
+5. **Verifiable Educational Outcomes**  
+   Structured objectives, automated verification, progress tracking, and instructor oversight.
+
+6. **Ethical Framework**  
+   Explicit focus on responsible use, isolation from real networks, and emphasis on defense-in-depth.
+
+### Target Audience & Impact
+
+This SiegeWare simulator is built for:
+
+- **University cybersecurity programs** (undergraduate & graduate)
+- **Professional training organizations** (SANS, Offensive Security, etc.)
+- **Corporate security awareness & red/blue team training**
+- **Independent learners** preparing for OSCP, PNPT, CRTP, etc.
+- **AI security researchers** studying agent behavior in adversarial settings
+
+By providing a free, open-source, reproducible SiegeWare platform, DeMoD LLC aims to:
+
+- Democratize access to high-quality cybersecurity simulation
+- Accelerate the development of AI-literate security professionals
+- Foster ethical understanding of offensive security capabilities
+- Create a standard reference platform for AI-security education
+
+**SiegeWare is not a game. It is a training ground.**
+
+Future defenders must understand how future attackers think — and future attackers must learn the consequences of their actions. This lab bridges that understanding in a controlled, responsible way.
+
 ## Overview
 
 This lab provides a secure, isolated platform to explore the intersection of artificial intelligence and cybersecurity through structured, AI-driven red team vs. blue team exercises. Built entirely with Nix and NixOS, it guarantees identical environments across machines and supports multiple hardware platforms.
