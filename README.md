@@ -162,7 +162,7 @@ By completing the full lab series, participants will be able to:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/demod-llc/ai-agents-lab.git
+   git clone https://github.com/ALH477/ai-agents-lab.git
    cd ai-agents-lab
    ```
 
