@@ -2,7 +2,7 @@
 
 A declarative, reproducible cybersecurity simulation environment for studying AI-assisted offensive and defensive security practices.
 
-## Introducing SiegeWare™
+## Introducing SiegeWare
 
 ### The Concept
 
