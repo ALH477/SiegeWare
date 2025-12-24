@@ -159,7 +159,7 @@ By completing the full lab series, participants will be able to:
 - Basic Linux terminal proficiency
 
 ### Step-by-Step Deployment
-
+**Best plug and play UX with [Oligarchy NixOS lite](https://github.com/ALH477/Oligarchy-lite)**
 1. **Clone the repository**
    ```bash
    git clone https://github.com/ALH477/ai-agents-lab.git
