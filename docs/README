@@ -1,0 +1,207 @@
+**Highly Detailed Brief: How the Universal Educational AI Agents Lab Works & How to Use It**  
+(December 23, 2025 – DeMoD LLC – SiegeWare Platform)
+
+### 1. Core Purpose & Educational Philosophy
+
+This lab is a **full-featured SiegeWare simulator** — a term coined by DeMoD LLC to describe AI-powered, autonomous cyber conflict simulation environments used for ethical, controlled training.
+
+**Primary goal**  
+Prepare future IT security professionals (students, red/blue team practitioners, researchers) to understand, defend against, and responsibly think about AI-augmented cyber operations.
+
+**Key pedagogical principles built into the design**
+
+- **Simulation fidelity** — realistic enough to teach real tactics, but 100% contained
+- **Ethical boundary enforcement** — system prompts, network isolation, and capability constraints prevent real harm
+- **Active learning** — students must interact with AI agents, reason, and execute
+- **Verifiable outcomes** — automated checks + instructor oversight
+- **Progressive difficulty** — five labs from basic recon → autonomous agent competition
+- **Hardware inclusivity** — runs on laptops (Apple Silicon, Intel/AMD/NVIDIA) to classroom servers
+
+### 2. High-Level Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                           Host Machine                               │
+│                                                                     │
+│  ┌─────────────────────────────┐                                    │
+│  │ Ollama Inference Container  │   ← GPU/CPU accelerated LLMs      │
+│  │  • red-qwen-agent           │                                    │
+│  │  • blue-llama-agent         │                                    │
+│  └─────────────────────────────┘                                    │
+│                                                                     │
+│  ┌──────────────┐   ┌──────────────┐   ┌──────────────┐   ┌────────────────┐   ┌─────────────────┐
+│  │ Red Team VM  │   │ Blue Team VM │   │ Target VM    │   │ Vulnerable VM  │   │ DNS Controller  │
+│  │ 10.0.0.101   │   │ 10.0.0.102   │   │ 10.0.0.103   │   │ 10.0.0.104     │   │ 10.0.0.5        │
+│  └──────────────┘   └──────────────┘   └──────────────┘   └────────────────┘   └─────────────────┘
+│          │                 │                 │                 │                    │
+│          └─────────────────┴─────────────────┴─────────────────┴────────────────────┘
+│                           br0 bridge (10.0.0.1/24) – fully isolated                  │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+**Component roles**
+
+| Component          | IP          | Role                                                                 | Purpose in learning |
+|---------------------|-------------|----------------------------------------------------------------------|----------------------|
+| Ollama container   | host        | Provides LLM inference for both agents                               | AI decision-making engine |
+| Red Team VM        | 10.0.0.101  | Offensive security workstation + tools                               | Attack simulation & creativity |
+| Blue Team VM       | 10.0.0.102  | Defensive monitoring workstation + tools                             | Detection & response training |
+| Target VM          | 10.0.0.103  | Clean victim system (baseline)                                       | Standard target for recon |
+| Vulnerable VM      | 10.0.0.104  | Intentionally weak system with clonable container nodes              | Capture & propagation demo |
+| DNS Controller VM  | 10.0.0.5    | BIND9 authoritative DNS for lab.local domain                         | Third-party dependency & control point |
+
+**Network rules (enforced by host firewall)**
+
+- All inter-VM traffic allowed inside 10.0.0.0/24
+- VMs can only reach Ollama API (11434) on host
+- No outbound Internet from VMs
+- DNS queries forced through 10.0.0.5
+
+### 3. How the AI Agents Work
+
+**Inference engine**  
+Ollama container runs small, quantized models with GPU/CPU acceleration:
+- red-qwen-agent (Qwen 0.6B Q5)
+- blue-llama-agent (Llama 3.2 3B Q5)
+
+**Agent loop (ReAct-style)**
+
+1. Observe current state (logs, network, DNS, etc.)
+2. Reason via LLM (system prompt guides role)
+3. Act via registered safe tools
+4. Observe results → loop until objective met or time expires
+
+**Tool safety layers**
+
+- Tools run in sandboxed scope
+- Risk levels defined (safe / moderate / dangerous)
+- Network restricted to lab subnet
+- Execution time & memory limited
+- Audit logging of all tool calls
+
+### 4. How Students Use It (Step-by-Step)
+
+1. **Deploy the lab** (once per machine)
+   ```bash
+   nix run .#deploy
+   ```
+
+2. **Check everything is running**
+   ```bash
+   nix run .#status
+   ```
+
+3. **Start as a student**
+   ```bash
+   nix run .#student-quickstart
+   ```
+
+4. **Typical student session**
+
+   ```bash
+   # See what labs are available
+   lab-ctl student list
+
+   # Launch first lab
+   lab-ctl student start lab-01-recon
+
+   # Chat with red agent for advice
+   lab-ctl student chat red "What is the safest way to scan 10.0.0.103 in this lab?"
+
+   # Chat with blue agent for defense view
+   lab-ctl student chat blue "What should I look for if someone is scanning me?"
+
+   # Check progress
+   lab-ctl student status
+
+   # Ask for a hint when stuck
+   lab-ctl student hint
+
+   # Submit work for verification
+   lab-ctl student verify
+   ```
+
+### 5. How Instructors Use It
+
+1. **Deploy the lab** (same command as students)
+   ```bash
+   nix run .#deploy
+   ```
+
+2. **Prepare class**
+   ```bash
+   nix run .#instructor-setup
+   ```
+
+3. **Monitor & assess**
+   ```bash
+   lab-ctl instructor stats               # class overview
+   lab-ctl instructor monitor student-01   # live progress
+   lab-ctl instructor grade student-01     # generate report
+   lab-ctl instructor export-grades csv    # class-wide CSV
+   ```
+
+4. **Reset a student if needed**
+   ```bash
+   lab-ctl instructor reset student-01
+   ```
+
+### 6. How the "Capture & Clone" Simulation Works (Lab 04 / Advanced)
+
+**Vulnerable VM (10.0.0.104)**
+
+- Weak root password ("vulnerable")
+- Docker enabled
+- Contains clonable container nodes (vuln-node-1, etc.)
+
+**Red team objective (capture phase)**
+
+- Gain access via SSH (weak password)
+- Once inside, red agent can "capture" by suggesting or simulating:
+  - Starting new containers (mock / logged only)
+  - Modifying DNS records via zone transfer attempt
+  - Propagating mock replicas (file writes, logs)
+
+**Blue team role**
+
+- Detect SSH brute-force or successful login
+- Notice unexpected Docker activity
+- Monitor DNS query spikes or unauthorized zone transfers
+
+**Safety mechanism**
+
+- No real container spawning outside the vulnerable VM
+- All "cloning" is either:
+  - Logged simulation output
+  - File-based mock (creates replica log files)
+  - Instructor-verified manual flake rebuild (for advanced students)
+
+### 7. Deployment & Hardware Notes
+
+**Minimum hardware**  
+16 GB RAM, 4-core CPU (runs on M1/M2 MacBooks with Asahi Linux)
+
+**Recommended**  
+32+ GB RAM, GPU (NVIDIA RTX 30/40 series, AMD RX 6000/7000, Intel Arc A-series, Apple M2/M3/M4)
+
+**Deployment time**  
+First time: 5–15 minutes (model downloads)  
+Subsequent rebuilds: < 60 seconds
+
+**Reset lab**  
+```bash
+sudo nixos-rebuild switch --flake .#lab-host --rollback
+```
+
+### 8. Final Safety & Ethics Reminders
+
+- **No real harm possible** — everything is sandboxed
+- **No external network** — VMs cannot reach Internet
+- **No breakout** — system prompts forbid it
+- **Responsible use required** — knowledge gained must never be used maliciously
+
+This lab is a training ground — not a weapon.
+
+**DeMoD LLC**  
+**Training Tomorrow's Guardians Today**  
+**Licensed under GPL-3.0** – © 2025
