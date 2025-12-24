@@ -82,7 +82,7 @@ If you deploy this lab in an educational or training setting, you must:
 
 If you discover any vulnerability, unintended capability, or potential for misuse:
 
-- Report it immediately and exclusively to DeMoD LLC via security@demod.llc
+- Report it immediately and exclusively to DeMoD LLC via info@demod.ltd
 - Do not publicly disclose until a coordinated disclosure process is completed
 
 ### 9. Governing Law & Jurisdiction
