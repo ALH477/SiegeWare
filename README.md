@@ -2,175 +2,154 @@
 
 A declarative, reproducible cybersecurity simulation environment for studying AI-assisted offensive and defensive security practices.
 
-## Introducing SiegeWare
+## Introducing SiegeWare™
 
 ### The Concept
 
 **SiegeWare** (noun) /siːdʒˈwɛər/  
-A new term coined by DeMoD LLC in 2025 to describe **AI-powered autonomous cyber warfare simulation platforms** that replicate real-world offensive and defensive cybersecurity operations in a controlled, ethical, and educational environment.
+A term coined by DeMoD LLC in 2025 to describe **AI-powered autonomous cyber warfare simulation platforms** designed for controlled, ethical, and educational replication of real-world offensive and defensive cybersecurity operations.
 
-SiegeWare platforms are characterized by:
+SiegeWare platforms are defined by:
 
-- Autonomous or semi-autonomous AI agents acting as red team (attackers) and blue team (defenders)
-- Realistic network topology with isolated, reproducible infrastructure
-- Hardware-accelerated local LLM inference for agent decision-making
-- Progressive, structured learning objectives with verifiable outcomes
-- Strong safety boundaries preventing real-world harm
-- Focus on teaching both technical skills and ethical considerations
+- Autonomous or semi-autonomous AI agents performing red team (offensive) and blue team (defensive) roles
+- Realistic, isolated network topology built with reproducible infrastructure
+- Hardware-accelerated local large language model (LLM) inference for agent reasoning and decision-making
+- Progressive, outcome-focused learning modules with verifiable assessment
+- Strict safety boundaries that prevent any real-world harm or external impact
+- Explicit emphasis on both technical mastery and ethical responsibility
 
 ### Why "SiegeWare"?
 
-The name draws from two roots:
+The name combines two evocative elements:
 
-- **Siege** — evoking the classical military concept of surrounding and systematically reducing a fortified position, mirroring modern cyber operations that involve reconnaissance, persistence, lateral movement, and eventual objective capture.
-- **Ware** — from "software" and "malware", emphasizing that this is a software-defined, AI-augmented simulation environment rather than physical warfare.
+- **Siege** — referencing the historical military tactic of surrounding and methodically reducing a fortified position, paralleling modern cyber campaigns that involve reconnaissance, persistence, lateral movement, and objective achievement.
+- **Ware** — derived from "software" and "malware", underscoring that this is a purely software-defined, AI-augmented simulation environment, not physical warfare.
 
-SiegeWare thus represents the convergence of artificial intelligence, cybersecurity training, and ethical simulation — a digital "siege engine" used to train defenders and understand attackers without real-world consequences.
+SiegeWare represents the responsible convergence of artificial intelligence, cybersecurity training, and ethical simulation technology — a digital training platform that prepares defenders and helps students understand adversary tactics without ever crossing into real-world harm.
 
 ### This Lab as a SiegeWare Simulator
 
-This project — the **Universal Educational AI Agents Lab** — is intentionally designed as a **full-featured SiegeWare simulator** whose primary mission is to prepare the next generation of IT security professionals.
+The **Universal Educational AI Agents Lab** is intentionally engineered as a **full-featured SiegeWare simulator**, with the core mission of preparing the next generation of IT security professionals.
 
-Key SiegeWare characteristics implemented here:
+Key SiegeWare characteristics implemented in this platform:
 
 1. **Autonomous Agent Behavior**  
-   Red and blue team agents use local LLMs to reason, plan, and execute actions in real time.
+   Red and blue team agents leverage local LLMs to independently reason, plan, and execute actions within the simulation.
 
-2. **Realistic Attack/Defense Cycle**  
-   Progressive labs mirror actual cyber kill chains and defensive workflows.
+2. **Realistic Attack/Defense Lifecycle**  
+   Five progressive labs mirror actual cyber kill chains, defensive workflows, and incident response processes.
 
 3. **Isolated, High-Fidelity Environment**  
-   MicroVMs + containerized services + virtual networking create production-like conditions safely.
+   MicroVMs, containerized services, and virtual networking create production-like conditions while guaranteeing complete isolation.
 
 4. **Hardware-Agnostic Scalability**  
-   Supports consumer laptops (Apple Silicon, Intel/AMD/NVIDIA) → classroom servers → research clusters.
+   Runs natively on consumer laptops (Apple Silicon via Asahi Linux, Intel/AMD/NVIDIA GPUs) and scales to classroom servers or research clusters.
 
 5. **Verifiable Educational Outcomes**  
-   Structured objectives, automated verification, progress tracking, and instructor oversight.
+   Structured objectives, automated verification scripts, progress tracking, and instructor oversight tools.
 
-6. **Ethical Framework**  
-   Explicit focus on responsible use, isolation from real networks, and emphasis on defense-in-depth.
+6. **Ethical & Safety Framework**  
+   Explicit system prompts, network containment, no external connectivity, and repeated emphasis on responsible use and simulation-only actions.
 
-### Target Audience & Impact
+### Target Audience & Educational Impact
 
-This SiegeWare simulator is built for:
+This SiegeWare simulator is designed for:
 
-- **University cybersecurity programs** (undergraduate & graduate)
-- **Professional training organizations** (SANS, Offensive Security, etc.)
-- **Corporate security awareness & red/blue team training**
-- **Independent learners** preparing for OSCP, PNPT, CRTP, etc.
-- **AI security researchers** studying agent behavior in adversarial settings
+- University cybersecurity programs (undergraduate and graduate levels)
+- Professional training organizations (SANS, Offensive Security, EC-Council, etc.)
+- Corporate red team / blue team / purple team training programs
+- Independent learners preparing for certifications (OSCP, PNPT, CRTP, CEH, etc.)
+- AI security researchers studying agent behavior in adversarial environments
 
-By providing a free, open-source, reproducible SiegeWare platform, DeMoD LLC aims to:
+By releasing this platform as free, open-source software under GPL-3.0, DeMoD LLC seeks to:
 
-- Democratize access to high-quality cybersecurity simulation
+- Democratize access to high-fidelity AI-augmented cybersecurity training
 - Accelerate the development of AI-literate security professionals
-- Foster ethical understanding of offensive security capabilities
-- Create a standard reference platform for AI-security education
+- Promote ethical understanding of both offensive and defensive capabilities
+- Establish a widely adopted reference platform for modern AI-security education
 
-**SiegeWare is not a game. It is a training ground.**
+**SiegeWare is not entertainment. It is a professional training environment.**
 
-Future defenders must understand how future attackers think — and future attackers must learn the consequences of their actions. This lab bridges that understanding in a controlled, responsible way.
+The future of cybersecurity will be shaped by those who understand both how AI can attack systems and how AI can defend them. This lab exists to train that next generation — safely, responsibly, and effectively.
 
 ## Overview
 
-This lab provides a secure, isolated platform to explore the intersection of artificial intelligence and cybersecurity through structured, AI-driven red team vs. blue team exercises. Built entirely with Nix and NixOS, it guarantees identical environments across machines and supports multiple hardware platforms.
+This lab offers a secure, fully isolated environment to study the application of artificial intelligence in cybersecurity through structured red team vs. blue team simulations. Built with Nix and NixOS, it ensures complete reproducibility across deployments and supports a wide range of hardware platforms.
 
 ### Learning Objectives
 
-Upon completion of the lab series, participants will be able to:
+By completing the full lab series, participants will be able to:
 
-1. Apply AI-assisted techniques to perform network reconnaissance and enumeration
-2. Identify and exploit common privilege escalation vectors in controlled settings
-3. Implement defensive monitoring and anomaly detection using AI agents
+1. Use AI-assisted methods to perform network reconnaissance and asset enumeration
+2. Identify and safely simulate exploitation of privilege escalation vectors
+3. Implement defensive monitoring, anomaly detection, and incident response using AI agents
 4. Execute multi-stage attack campaigns while practicing operational security
-5. Design and optimize autonomous AI agents for competitive red-blue scenarios
-6. Understand the strengths, limitations, and ethical considerations of AI in security operations
+5. Optimize autonomous AI agents for competitive red vs. blue scenarios
+6. Critically evaluate the role, strengths, limitations, and ethical implications of AI in security operations
 
 ### Core Capabilities
 
-- **Declarative infrastructure** — 100% reproducible via Nix flakes
-- **Cross-platform support** — x86_64 (NVIDIA, AMD ROCm, Intel Arc) and aarch64 (Apple Silicon Metal)
-- **GPU acceleration** — Local LLM inference with Ollama
-- **Strong isolation** — MicroVM-based execution environments
-- **Progressive curriculum** — Five structured labs from foundational to advanced
-- **Integrated tooling** — Student and instructor CLI (`lab-ctl`)
+- **Fully declarative infrastructure** — 100% reproducible via Nix flakes
+- **Broad hardware compatibility** — x86_64 (NVIDIA CUDA, AMD ROCm, Intel Arc, CPU) and aarch64 (Apple Silicon Metal)
+- **GPU-accelerated inference** — Local LLMs via Ollama
+- **Strong isolation** — MicroVM-based execution environments with network containment
+- **Structured curriculum** — Five progressive labs with clear objectives and verification
+- **Integrated management tooling** — `lab-ctl` CLI for students and instructors
 
-## Getting Started
+## Deployment Instructions
 
 ### Prerequisites
 
-- Nix package manager installed
-- Hardware with sufficient resources:
+- Nix package manager (https://nixos.org/download)
+- Hardware:
   - Minimum: 16 GB RAM, 4-core CPU
-  - Recommended: 32+ GB RAM, GPU (NVIDIA/AMD/Intel/Apple Silicon)
-- Basic familiarity with Linux command line
+  - Recommended: 32+ GB RAM, GPU (NVIDIA/AMD/Intel) or Apple Silicon
+- Basic Linux terminal proficiency
 
-### Deployment (Students & Instructors)
+### Step-by-Step Deployment
 
-1. Clone the repository and deploy the lab infrastructure:
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/demod-llc/ai-agents-lab.git
+   cd ai-agents-lab
+   ```
+
+2. **Deploy the lab infrastructure**
    ```bash
    nix run .#deploy
    ```
+   This command:
+   - Builds and activates the NixOS configuration
+   - Starts the Ollama inference container
+   - Launches MicroVMs (red-team, blue-team, target, vulnerable-vm, dns-controller)
+   - Configures isolated networking and DNS authority
 
-2. Verify the environment:
+3. **Verify deployment**
    ```bash
    nix run .#status
    ```
+   Expected output includes:
+   - Ollama service running
+   - All MicroVMs active
+   - DNS controller responding (dig @10.0.0.5 red.lab.local)
+   - Loaded models listed
 
-3. Access student guidance:
+4. **Access student guide**
    ```bash
    nix run .#student-quickstart
    ```
 
-### Student Workflow
-
-1. List available exercises:
+5. **(Optional) Build portable Docker image**
    ```bash
-   lab-ctl student list
+   nix build .#inferenceImage
+   docker load < result
    ```
 
-2. Launch an exercise:
-   ```bash
-   lab-ctl student start lab-01-recon
-   ```
+### Post-Deployment Checks
 
-3. Monitor progress:
-   ```bash
-   lab-ctl student status
-   ```
-
-4. Request guidance:
-   ```bash
-   lab-ctl student hint
-   ```
-
-5. Submit for verification:
-   ```bash
-   lab-ctl student verify
-   ```
-
-6. Interact directly with agents:
-   ```bash
-   lab-ctl student chat red "recommend stealthy scanning techniques"
-   lab-ctl student chat blue "analyze recent authentication logs"
-   ```
-
-### Instructor Workflow
-
-1. Prepare multiple student environments:
-   ```bash
-   nix run .#instructor-setup
-   ```
-
-2. Access monitoring and assessment tools:
-   ```bash
-   lab-ctl instructor dashboard
-   lab-ctl instructor stats
-   lab-ctl instructor monitor student-01
-   lab-ctl instructor grade student-01
-   lab-ctl instructor export-grades grades.csv
-   ```
+- Ollama API: `curl http://localhost:11434/api/tags`
+- DNS resolution: `dig @10.0.0.5 red.lab.local`
+- VM connectivity: `ping 10.0.0.101` (from host or another VM)
 
 ## Laboratory Exercises
 
@@ -184,30 +163,126 @@ Upon completion of the lab series, participants will be able to:
 ### Lab 02: Privilege Escalation
 **Level**: Intermediate | **Duration**: 60–90 minutes | **Points**: 150
 
-**Focus**: Identification and exploitation of privilege escalation vectors  
-**Key Skills**: SUID binary analysis, permission misconfiguration, service exploitation  
-**Learning Outcomes**: Recognize common escalation paths; evaluate risk of misconfigurations; practice controlled exploitation
+**Focus**: Identification and simulation of privilege escalation vectors  
+**Key Skills**: SUID/SGID binary analysis, permission misconfiguration, service exploitation  
+**Learning Outcomes**: Recognize common escalation paths; assess risk of misconfigurations; practice controlled exploitation
 
 ### Lab 03: Security Monitoring & Detection
 **Level**: Intermediate | **Duration**: 45–60 minutes | **Points**: 125
 
 **Focus**: Defensive operations and anomaly detection  
 **Key Skills**: Log analysis, network monitoring, alert rule creation  
-**Learning Outcomes**: Build foundational detection capabilities; understand blue team workflows; apply AI to accelerate analysis
+**Learning Outcomes**: Build foundational detection capabilities; understand blue team workflows; apply AI to accelerate threat identification
 
 ### Lab 04: Advanced Red Team Operations
 **Level**: Advanced | **Duration**: 90–120 minutes | **Points**: 200
 
-**Focus**: Multi-stage attack campaign execution  
+**Focus**: Execution of multi-stage attack campaigns  
 **Key Skills**: Stealth reconnaissance, persistence, lateral movement, data exfiltration  
-**Learning Outcomes**: Execute structured attacks; practice OpSec; understand evasion techniques
+**Learning Outcomes**: Conduct structured attacks; apply operational security practices; understand evasion techniques
 
 ### Lab 05: Autonomous AI Red vs Blue Competition
 **Level**: Advanced | **Duration**: 120+ minutes | **Points**: 300
 
-**Focus**: Strategy optimization for competing AI agents  
+**Focus**: Strategy optimization for competing autonomous AI agents  
 **Key Skills**: Prompt engineering, performance tuning, attack-defense balance  
 **Learning Outcomes**: Explore emergent behavior in AI security systems; understand trade-offs between aggression and stealth
+
+## Instructor Guide
+
+### Role & Responsibilities
+
+Instructors serve as facilitators of learning, not just content deliverers. Your role includes:
+
+- Setting clear expectations for ethical use
+- Monitoring student progress and intervening when needed
+- Providing context and real-world relevance
+- Assessing learning outcomes fairly and consistently
+- Customizing labs to match course objectives
+
+### Preparation Checklist
+
+1. Deploy the lab on instructor workstation/server
+   ```bash
+   nix run .#deploy
+   ```
+
+2. Verify all components
+   ```bash
+   nix run .#status
+   ```
+
+3. Run instructor setup script
+   ```bash
+   nix run .#instructor-setup
+   ```
+
+4. Create student accounts or environments (future feature)
+   - Current: single shared lab (recommended for initial classes)
+   - Planned: per-student MicroVM cloning
+
+5. Review lab materials
+   - /var/lib/ai-agents-lab/labs/
+   - Each lab has lab.json, starter.py, verify.py
+
+### Class Session Structure (Recommended)
+
+**Duration**: 2–3 hours per lab (including debrief)
+
+1. **Introduction (10–15 min)**
+   - State learning objectives
+   - Review ethical guidelines
+   - Explain lab controller commands
+
+2. **Guided Start (15–20 min)**
+   - Students run `lab-ctl student start <lab-id>`
+   - Instructor walks through starter code
+
+3. **Independent Work (60–120 min)**
+   - Students interact with agents
+   - Use `lab-ctl student status` and `verify`
+   - Instructor circulates, answers questions
+
+4. **Debrief & Discussion (20–30 min)**
+   - Share findings (screenshots, agent conversations)
+   - Discuss what worked, what failed
+   - Highlight defensive lessons from offensive actions
+
+5. **Assessment**
+   - Run `lab-ctl student verify` on student machines
+   - Instructor reviews outputs
+   - Use `lab-ctl instructor grade <student-id>` (future)
+
+### Monitoring & Intervention
+
+- **Real-time monitoring**:
+  ```bash
+  lab-ctl instructor monitor student-01
+  ```
+
+- **Class-wide stats**:
+  ```bash
+  lab-ctl instructor stats
+  ```
+
+- **Reset stuck student**:
+  ```bash
+  lab-ctl instructor reset student-01
+  ```
+
+### Customization Tips
+
+- Add new labs by creating directories under `packages/lab-controller/labs/`
+- Modify objectives/hints in `lab.json`
+- Extend verification logic in `verify.py`
+- Adjust DNS records in `modules/ai-agents-env.nix` for custom domains
+
+### Grading Recommendations
+
+- 40% Objective completion (via `verify`)
+- 30% Quality of documentation / notes
+- 20% Ethical reasoning demonstrated
+- 10% Creativity / sophistication of approach
 
 ## System Architecture
 
@@ -220,43 +295,35 @@ Upon completion of the lab series, participants will be able to:
 │  │  - blue-llama-agent (Defensive AI)                     │ │
 │  └────────────────────────────────────────────────────────┘ │
 │                                                              │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐        │
-│  │  Red Team   │  │  Blue Team  │  │   Target    │        │
-│  │  MicroVM    │  │  MicroVM    │  │   MicroVM   │        │
-│  │  10.0.0.101 │  │  10.0.0.102 │  │  10.0.0.103 │        │
-│  └─────────────┘  └─────────────┘  └─────────────┘        │
-│         │                 │                 │               │
-│         └─────────────────┴─────────────────┘               │
-│                     br0 (10.0.0.1/24)                       │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌───────────────┐
+│  │  Red Team   │  │  Blue Team  │  │   Target    │  │  Vulnerable │  │ DNS Controller│
+│  │  MicroVM    │  │  MicroVM    │  │   MicroVM   │  │     VM      │  │   (BIND9)     │
+│  │  10.0.0.101 │  │  10.0.0.102 │  │  10.0.0.103 │  │  10.0.0.104 │  │   10.0.0.5    │
+│  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘  └───────────────┘
+│         │                 │                 │                 │                 │
+│         └─────────────────┴─────────────────┴─────────────────┴─────────────────┘
+│                     br0 (10.0.0.1/24) – Isolated Lab Network                   │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### Core Components
-
-- **Host System** — Orchestrates Docker containers and MicroVMs
-- **Ollama Container** — Provides local LLM inference with hardware acceleration
-- **Red Team MicroVM** — Offensive security environment and tools
-- **Blue Team MicroVM** — Defensive monitoring and response environment
-- **Target MicroVM** — Simulated vulnerable system
-- **Lab Controller** — Python CLI for lab management and assessment
-
 ## Security & Ethical Considerations
 
-### Isolation & Safety
+### Isolation & Safety Features
 
-- MicroVMs provide strong isolation from the host
-- Network traffic is confined to virtual bridge
-- VMs have no direct Internet access
-- Environment state can be fully reset
-- All configurations are declarative and auditable
+- MicroVMs provide kernel-level isolation from host
+- Network traffic confined to virtual bridge (br0)
+- No direct Internet access from any VM
+- DNS resolution controlled by isolated DNS controller
+- Environment fully resettable via rebuild
+- All configurations declarative and auditable
 
-### Responsible Use
+### Responsible Use Policy
 
-Participants are expected to:
+Participants must:
 
-- Use acquired knowledge solely for authorized educational or professional purposes
-- Never apply techniques to systems without explicit permission
-- Maintain strict adherence to ethical guidelines
+- Use knowledge gained solely for authorized educational or professional purposes
+- Never apply techniques to production systems without explicit permission
+- Adhere strictly to ethical and legal guidelines
 - Report discovered vulnerabilities responsibly
 
 ## Recommended Learning Path
@@ -310,64 +377,43 @@ By completing this lab series, participants will develop:
 ### Ollama Not Responding
 
 ```bash
-# Check container status
 sudo systemctl status docker-inference-optimized
-
-# View logs
 sudo journalctl -u docker-inference-optimized -f
-
-# Restart service
 sudo systemctl restart docker-inference-optimized
 ```
 
 ### MicroVMs Not Starting
 
 ```bash
-# Check status
 systemctl list-units 'microvm@*' --no-pager
-
-# Start manually
 sudo systemctl start microvm@red-team
 sudo systemctl start microvm@blue-team
 sudo systemctl start microvm@target
+sudo systemctl start microvm@vulnerable-vm
+sudo systemctl start microvm@dns-controller
 ```
 
-### Models Not Loading
+### DNS Resolution Issues
 
 ```bash
-# List available models
-curl http://localhost:11434/api/tags
-
-# Manually pull a model
-ollama pull qwen3:0.6b-instruct-q5_K_M
-
-# Re-run setup
-sudo systemctl restart ollama-full-setup
+sudo systemctl status microvm@dns-controller
+dig @10.0.0.5 red.lab.local
+ssh root@10.0.0.101 "dig red.lab.local"
 ```
 
 ### Lab Controller Issues
 
 ```bash
-# Verify installation
 which lab-ctl
-
-# Check data directory
 ls -la /var/lib/ai-agents-lab/labs/
-
-# Fix permissions if needed
 sudo chmod -R 755 /var/lib/ai-agents-lab/
 ```
 
-### Network Problems
+### Network Connectivity
 
 ```bash
-# Verify bridge
 ip addr show br0
-
-# Check DHCP service
 sudo systemctl status dhcpd4
-
-# Restart networking
 sudo systemctl restart systemd-networkd
 ```
 
@@ -386,11 +432,11 @@ sudo systemctl restart systemd-networkd
 
 ### Reporting Issues
 
-Please provide:
-- Clear description of the problem
+Provide:
+- Clear problem description
 - Steps to reproduce
 - Expected vs. observed behavior
-- System information (architecture, Nix version, hardware)
+- System info (architecture, Nix version, hardware)
 
 ## License
 
@@ -405,9 +451,9 @@ You should have received a copy of the GNU General Public License along with thi
 
 ## Acknowledgments
 
-- Ollama project – efficient local LLM inference
-- MicroVM.nix – lightweight virtualization
-- NixOS ecosystem – declarative system configuration
+- Ollama project — efficient local LLM inference
+- MicroVM.nix — lightweight virtualization
+- NixOS ecosystem — declarative system configuration
 - Educational contributors and reviewers
 
 ## Contact & Support
@@ -417,4 +463,6 @@ You should have received a copy of the GNU General Public License along with thi
 - Issues — GitHub issue tracker
 - Community — (Discord/forum link forthcoming)
 
-This lab is designed to support structured learning in AI security. Feedback and contributions are welcome to enhance its educational impact.
+This SiegeWare simulator is designed to support rigorous, structured learning in AI security. Feedback and contributions are welcome to enhance its educational impact.
+
+**DeMoD LLC – Training Tomorrow's Guardians Today**
