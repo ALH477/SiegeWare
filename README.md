@@ -2,6 +2,58 @@
 
 A declarative, reproducible cybersecurity simulation environment for studying AI-assisted offensive and defensive security practices.
 
+```ascii
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                       Host Machine (NixOS)                                  │
+│                                                                             │
+│  ┌─────────────────────────────┐                                            │
+│  │ Ollama Container            │   ← GPU/CPU • Runs red & blue agents     │
+│  │ (localhost:11434)           │                                            │
+│  └─────────────────────────────┘                                            │
+│                                                                             │
+│  ┌───────────────┐   ┌───────────────┐   ┌───────────────┐   ┌───────────────┐
+│  │ Red Team VM   │   │ Blue Team VM  │   │ Target VM     │   │ Vulnerable VM │
+│  │ 10.0.0.101    │   │ 10.0.0.102    │   │ 10.0.0.103    │   │ 10.0.0.104    │
+│  │ Offensive     │   │ Defensive     │   │ Clean victim  │   │ Weak system   │
+│  └───────────────┘   └───────────────┘   └───────────────┘   └───────────────┘
+│         │                   │                   │                   │
+│         └───────────────────┴───────────────────┴───────────────────┘
+│                           br0 bridge (10.0.0.1/24)                         │
+│                                                                             │
+│                       DNS Controller VM (10.0.0.5)                         │
+│                           • BIND9 authoritative DNS                          │
+│                           • All name resolution goes through here           │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Simple I/O Flow:
+You → lab-ctl CLI → Ollama (AI brain) → Red/Blue agent thinks → calls safe tools
+→ runs inside MicroVM → result loops back → you see output
+All network stays inside br0 — no real Internet, no breakout.
+```
+
+```mermaid
+graph TD
+    A[You / lab-ctl CLI] --> B[Ollama Container<br>GPU/CPU Inference]
+    B --> C[Red Team Agent<br>10.0.0.101]
+    B --> D[Blue Team Agent<br>10.0.0.102]
+    C --> E[Target VM<br>10.0.0.103]
+    C --> F[Vulnerable VM<br>10.0.0.104]
+    D --> F
+    E --> G[DNS Controller<br>10.0.0.5<br>BIND9]
+    F --> G
+    subgraph "Isolated Lab Network"
+        E
+        F
+        G
+        C
+        D
+    end
+    subgraph "Host"
+        B
+        A
+    end
+```
+
 ## Introducing SiegeWare
 
 ### The Concept
