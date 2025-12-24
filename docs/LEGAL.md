@@ -1,7 +1,7 @@
 **Legal Disclaimer**
 
 **AI Agents Educational Lab**  
-**SiegeWare™ Simulator**  
+**SiegeWare Simulator**  
 **Developed by DeMoD LLC**  
 **Version 1.0 – December 23, 2025**
 
