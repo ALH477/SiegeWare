@@ -465,4 +465,3 @@ You should have received a copy of the GNU General Public License along with thi
 
 This SiegeWare simulator is designed to support rigorous, structured learning in AI security. Feedback and contributions are welcome to enhance its educational impact.
 
-**DeMoD LLC – Training Tomorrow's Guardians Today**
