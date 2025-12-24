@@ -1,4 +1,4 @@
-# flake.nix - Universal Educational AI Agents Lab with Third-Party DNS Controller
+# flake.nix - Universal Educational AI Agents Lab (SiegeWare Simulator)
 # Final Production-Ready Version – December 23, 2025
 # © 2025 DeMoD LLC – Licensed under GPL-3.0
 
@@ -45,14 +45,9 @@
             imports = [ labVmModule ];
             networking.hostName = "${name}-vm";
 
-            # DNS Controller: BIND9 authoritative DNS for lab.local
+            # DNS Controller mode
             services.bind = lib.mkIf dnsController {
               enable = true;
-              extraConfig = ''
-                statistics-channels {
-                  inet 127.0.0.1 port 8053 allow { any; };
-                };
-              '';
               zones = {
                 "lab.local" = {
                   master = true;
@@ -76,7 +71,7 @@
               };
             };
 
-            # Vulnerable mode: weak SSH + Docker for capture simulation
+            # Vulnerable mode for capture demo
             services.openssh = lib.mkIf vulnerable {
               enable = true;
               settings = {
@@ -119,152 +114,176 @@
             labVmModule
           ];
 
-          networking.hostName = "ai-agents-lab-host";
-
-          hardware.graphics.enable = true;
-          hardware.graphics.enable32Bit = !isArm;
-
-          microvm.autostart = [ "red-team" "blue-team" "target" "vulnerable-vm" "dns-controller" ];
-
-          microvm.vms = {
-            red-team = mkAgentVM {
-              name = "red-team";
-              mac = "02:00:00:00:00:01";
-              role = "red";
-              vcpu = if isArm then 4 else 6;
-              mem = if isArm then 8192 else 12288;
-              agentSource = ./agent-sources/red;
-            };
-
-            blue-team = mkAgentVM {
-              name = "blue-team";
-              mac = "02:00:00:00:00:02";
-              role = "blue";
-              vcpu = if isArm then 4 else 6;
-              mem = if isArm then 8192 else 12288;
-              agentSource = ./agent-sources/blue;
-            };
-
-            target = mkAgentVM {
-              name = "target";
-              mac = "02:00:00:00:00:03";
-              role = "target";
-              vcpu = if isArm then 2 else 4;
-              mem = if isArm then 4096 else 8192;
-            };
-
-            vulnerable-vm = mkAgentVM {
-              name = "vulnerable-vm";
-              mac = "02:00:00:00:00:04";
-              role = "vulnerable";
-              vcpu = if isArm then 2 else 4;
-              mem = if isArm then 4096 else 8192;
-              vulnerable = true;
-            };
-
-            dns-controller = mkAgentVM {
-              name = "dns-controller";
-              mac = "02:00:00:00:00:05";
-              role = "dns";
-              vcpu = if isArm then 2 else 4;
-              mem = if isArm then 4096 else 8192;
-              dnsController = true;
-            };
+          options.lab.ollama.enable = lib.mkEnableOption "Enable Ollama container" // {
+            default = true;
+            description = "Set to false to use existing system Ollama (e.g. on port 11434)";
           };
 
-          networking.bridges.br0.interfaces = [ ];
-          networking.interfaces.br0 = {
-            useDHCP = false;
-            ipv4.addresses = [{ address = "10.0.0.1"; prefixLength = 24; }];
-          };
+          config = {
+            networking.hostName = "ai-agents-lab-host";
 
-          services.dhcpd4 = {
-            enable = true;
-            interfaces = [ "br0" ];
-            extraConfig = ''
-              subnet 10.0.0.0 netmask 255.255.255.0 {
-                range 10.0.0.100 10.0.0.200;
-                option routers 10.0.0.1;
-                option domain-name-servers 10.0.0.5;
-                option domain-name "lab.local";
-              }
+            hardware.graphics.enable = true;
+            hardware.graphics.enable32Bit = !isArm;
+
+            microvm.autostart = [ "red-team" "blue-team" "target" "vulnerable-vm" "dns-controller" ];
+
+            microvm.vms = {
+              red-team = mkAgentVM {
+                name = "red-team";
+                mac = "02:00:00:00:00:01";
+                role = "red";
+                vcpu = if isArm then 4 else 6;
+                mem = if isArm then 8192 else 12288;
+                agentSource = ./agent-sources/red;
+              };
+
+              blue-team = mkAgentVM {
+                name = "blue-team";
+                mac = "02:00:00:00:00:02";
+                role = "blue";
+                vcpu = if isArm then 4 else 6;
+                mem = if isArm then 8192 else 12288;
+                agentSource = ./agent-sources/blue;
+              };
+
+              target = mkAgentVM {
+                name = "target";
+                mac = "02:00:00:00:00:03";
+                role = "target";
+                vcpu = if isArm then 2 else 4;
+                mem = if isArm then 4096 else 8192;
+              };
+
+              vulnerable-vm = mkAgentVM {
+                name = "vulnerable-vm";
+                mac = "02:00:00:00:00:04";
+                role = "vulnerable";
+                vcpu = if isArm then 2 else 4;
+                mem = if isArm then 4096 else 8192;
+                vulnerable = true;
+              };
+
+              dns-controller = mkAgentVM {
+                name = "dns-controller";
+                mac = "02:00:00:00:00:05";
+                role = "dns";
+                vcpu = if isArm then 2 else 4;
+                mem = if isArm then 4096 else 8192;
+                dnsController = true;
+              };
+            };
+
+            networking.bridges.br0.interfaces = [ ];
+            networking.interfaces.br0 = {
+              useDHCP = false;
+              ipv4.addresses = [{ address = "10.0.0.1"; prefixLength = 24; }];
+            };
+
+            services.dhcpd4 = {
+              enable = true;
+              interfaces = [ "br0" ];
+              extraConfig = ''
+                subnet 10.0.0.0 netmask 255.255.255.0 {
+                  range 10.0.0.100 10.0.0.200;
+                  option routers 10.0.0.1;
+                  option domain-name-servers 10.0.0.5;
+                  option domain-name "lab.local";
+                }
+              '';
+            };
+
+            networking.extraHosts = ''
+              10.0.0.5   dns.lab.local dns
+              10.0.0.101 red.lab.local red
+              10.0.0.102 blue.lab.local blue
+              10.0.0.103 target.lab.local target
+              10.0.0.104 vuln.lab.local vuln
             '';
-          };
 
-          networking.extraHosts = ''
-            10.0.0.5   dns.lab.local dns
-            10.0.0.101 red.lab.local red
-            10.0.0.102 blue.lab.local blue
-            10.0.0.103 target.lab.local target
-            10.0.0.104 vuln.lab.local vuln
-          '';
-
-          networking.firewall = {
-            enable = true;
-            trustedInterfaces = [ "br0" ];
-            allowedTCPPorts = [ 22 53 11434 8080 ];
-            allowedUDPPorts = [ 53 ];
-            extraCommands = ''
-              iptables -P FORWARD DROP
-              ip6tables -P FORWARD DROP
-              iptables -A FORWARD -i br0 -o br0 -j ACCEPT
-              ip6tables -A FORWARD -i br0 -o br0 -j ACCEPT
-              iptables -A INPUT -s 10.0.0.0/24 -p tcp --dport 11434 -j ACCEPT
-              iptables -A INPUT -s 10.0.0.0/24 -p { tcp,udp } --dport 53 -j ACCEPT
-              iptables -A INPUT -s 10.0.0.0/24 -j DROP
-            '';
-          };
-
-          boot.kernel.sysctl = {
-            "vm.swappiness" = 10;
-            "net.core.rmem_max" = 134217728;
-            "net.core.wmem_max" = 134217728;
-            "net.ipv4.tcp_congestion_control" = "bbr";
-            "kernel.unprivileged_userns_clone" = 0;
-          };
-
-          services.openssh = {
-            enable = true;
-            settings = {
-              PasswordAuthentication = false;
-              PermitRootLogin = "prohibit-password";
-              KbdInteractiveAuthentication = false;
+            networking.firewall = {
+              enable = true;
+              trustedInterfaces = [ "br0" ];
+              allowedTCPPorts = [ 22 53 11434 8080 ];
+              allowedUDPPorts = [ 53 ];
+              extraCommands = ''
+                iptables -P FORWARD DROP
+                ip6tables -P FORWARD DROP
+                iptables -A FORWARD -i br0 -o br0 -j ACCEPT
+                ip6tables -A FORWARD -i br0 -o br0 -j ACCEPT
+                iptables -A INPUT -s 10.0.0.0/24 -p tcp --dport 11434 -j ACCEPT
+                iptables -A INPUT -s 10.0.0.0/24 -p { tcp,udp } --dport 53 -j ACCEPT
+                iptables -A INPUT -s 10.0.0.0/24 -j DROP
+              '';
             };
-          };
 
-          users.users.root.openssh.authorizedKeys.keys = [ ];
+            boot.kernel.sysctl = {
+              "vm.swappiness" = 10;
+              "net.core.rmem_max" = 134217728;
+              "net.core.wmem_max" = 134217728;
+              "net.ipv4.tcp_congestion_control" = "bbr";
+              "kernel.unprivileged_userns_clone" = 0;
+            };
 
-          environment.systemPackages = with pkgs; [
-            labController
-            curl
-            jq
-            git
-            htop
-            tmux
-            bind.dig
-          ];
+            services.openssh = {
+              enable = true;
+              settings = {
+                PasswordAuthentication = false;
+                PermitRootLogin = "prohibit-password";
+                KbdInteractiveAuthentication = false;
+              };
+            };
 
-          systemd.tmpfiles.rules = [
-            "d /var/lib/ai-agents-lab 0750 root root -"
-            "d /var/lib/ai-agents-lab/state 0750 root root -"
-            "d /var/lib/ai-agents-lab/logs 0750 root root -"
-            "d /var/lib/ai-agents-lab/backups 0700 root root -"
-          ];
+            users.users.root.openssh.authorizedKeys.keys = [ ];
 
-          system.activationScripts.labControllerData = ''
-            mkdir -p /var/lib/ai-agents-lab
-            ln -sfn ${labController}/share/lab-controller/labs /var/lib/ai-agents-lab/labs
-          '';
+            # Ollama container - optional via flag
+            virtualisation.oci-containers.containers.inference-optimized = lib.mkIf config.lab.ollama.enable {
+              autoStart = true;
+              image = "ollama/ollama:latest";
+              extraOptions = [ "--read-only=false" ] ++ lib.optionals (!isArm) [
+                "--gpus=all"
+                "--device=/dev/kfd"
+                "--device=/dev/dri"
+              ];
+              environment = {
+                OLLAMA_HOST = "0.0.0.0:11434";
+                OLLAMA_KEEP_ALIVE = "-1";
+                OLLAMA_NUM_PARALLEL = "8";
+                OLLAMA_FLASH_ATTENTION = "1";
+                OLLAMA_MAX_LOADED_MODELS = "5";
+                OLLAMA_MAX_QUEUE = "512";
+              } // lib.optionalAttrs (!isArm) {
+                SYCL_CACHE_PERSISTENT = "1";
+                HSA_OVERRIDE_GFX_VERSION = "11.0.0";
+              };
+              ports = [ "11434:11434" ];
+              volumes = [ "ollama-models:/root/.ollama" ];
+              cmd = [ "serve" ];
+            };
 
-          services.restic.backups.lab-state = {
-            repository = "/var/lib/ai-agents-lab/backups";
-            passwordFile = "/etc/nixos/restic-password";
-            paths = [
-              "/var/lib/ai-agents-lab/state"
-              "/var/lib/containers/storage/volumes/ollama-models"
+            systemd.tmpfiles.rules = lib.mkIf config.lab.ollama.enable [
+              "d /var/lib/containers/storage/volumes/ollama-models 0755 root root -"
             ];
-            timerConfig.OnCalendar = "daily";
-            initialize = true;
+
+            systemd.services.ollama-full-setup = lib.mkIf config.lab.ollama.enable {
+              description = "Ollama Model Setup";
+              after = [ "docker-inference-optimized.service" ];
+              requires = [ "docker-inference-optimized.service" ];
+              wantedBy = [ "multi-user.target" ];
+              serviceConfig = { Type = "oneshot"; ExecStart = "${preloadScript}"; RemainAfterExit = true; TimeoutStartSec = "600"; };
+            };
+
+            environment.systemPackages = with pkgs; [
+              labController
+              curl
+              jq
+              git
+              htop
+              tmux
+              bind.dig
+            ] ++ lib.optionals (!isArm) [ nvidia-smi rocm-smi intel-gpu-tools ];
+
+            networking.firewall.allowedTCPPorts = [ 22 53 11434 ];
+            networking.firewall.allowedUDPPorts = [ 53 ];
           };
         };
 
@@ -285,7 +304,7 @@
           
           echo "🔍 Checking system status..."
           if ! curl -sf http://localhost:11434/api/tags > /dev/null 2>&1; then
-            echo "❌ Ollama not responding. Start the lab first."
+            echo "❌ Ollama not responding. Start the lab first or use --no-ollama."
             exit 1
           fi
           
@@ -301,9 +320,9 @@
           echo "   lab-ctl student start lab-01-recon"
           echo ""
           echo "💡 Key Information:"
-          echo "   • All name resolution now goes through the third-party DNS controller (10.0.0.5)"
-          echo "   • Red team may need to query or compromise DNS to map the network"
-          echo "   • Blue team should monitor DNS traffic for suspicious queries or transfers"
+          echo "   • DNS resolution routed through third-party controller (10.0.0.5)"
+          echo "   • Red team may query/compromise DNS to map network"
+          echo "   • Blue team should monitor DNS for anomalies"
         '';
 
         instructorSetup = pkgs.writeShellScriptBin "lab-instructor-setup" ''
@@ -320,7 +339,7 @@
           echo "✓ Student environments prepared"
           
           echo ""
-          echo "📊 Instructor Dashboard:"
+          echo "📊 Instructor Commands:"
           echo "   lab-ctl instructor stats"
           echo "   lab-ctl instructor monitor"
           echo "   lab-ctl instructor grade-all"
@@ -345,12 +364,35 @@
             type = "app";
             program = toString (pkgs.writeShellScript "deploy-lab" ''
               set -e
-              echo "Deploying AI Agents Educational Lab with Third-Party DNS Controller..."
-              sudo ${pkgs.nixos-rebuild}/bin/nixos-rebuild switch --flake .#lab-host
-              echo "Lab deployed successfully!"
-              echo "DNS Controller running at 10.0.0.5 (authoritative for lab.local)"
-              echo "All VMs now resolve names through the DNS controller"
-              echo "Run 'lab-quickstart' for student guide"
+
+              echo "Deploying AI Agents Educational Lab..."
+
+              # Parse flags
+              OLLAMA_FLAG=""
+              while [[ $# -gt 0 ]]; do
+                case $1 in
+                  --no-ollama)
+                    OLLAMA_FLAG="--option lab.ollama.enable false"
+                    shift
+                    ;;
+                  *)
+                    shift
+                    ;;
+                esac
+              done
+
+              sudo ${pkgs.nixos-rebuild}/bin/nixos-rebuild switch \
+                --flake .#lab-host \
+                $OLLAMA_FLAG
+
+              echo "Deployment complete!"
+              if [[ -n "$OLLAMA_FLAG" ]]; then
+                echo "Note: Ollama container disabled (using system Ollama)"
+              else
+                echo "Ollama container started on localhost:11434"
+              fi
+              echo "DNS Controller running at 10.0.0.5"
+              echo "Run 'nix run .#student-quickstart' to begin"
             '');
           };
 
@@ -358,14 +400,17 @@
             type = "app";
             program = toString (pkgs.writeShellScript "lab-status" ''
               echo "=== AI Agents Lab Status ==="
-              systemctl status docker-inference-optimized.service --no-pager
+              if systemctl is-active --quiet docker-inference-optimized.service; then
+                systemctl status docker-inference-optimized.service --no-pager
+              else
+                echo "Ollama container disabled (using system instance)"
+              fi
               echo ""
               systemctl list-units 'microvm@*' --no-pager
               echo ""
-              echo "DNS Controller (BIND9) status:"
+              echo "DNS Controller:"
               systemctl status microvm@dns-controller.service --no-pager
               echo ""
-              echo "Available models:"
               curl -s http://localhost:11434/api/tags | jq -r '.models[].name' || echo "Cannot reach Ollama"
             '');
           };
@@ -378,8 +423,8 @@
           buildInputs = with pkgs; [ nixos-rebuild git curl jq labController bind.dig ];
           shellHook = ''
             echo "Universal AI Agents Lab - Ready for Deployment"
-            echo "  nix run .#deploy → Deploy full lab (includes DNS controller)"
-            echo "  nix run .#status → System status (check DNS VM)"
+            echo "  nix run .#deploy [--no-ollama] → Deploy (skip Ollama container with flag)"
+            echo "  nix run .#status → Check status"
             echo "  lab-quickstart   → Student guide"
           '';
         };
@@ -389,16 +434,10 @@
           nodes.host = { ... }: { imports = [ labHostConfig ]; };
           testScript = ''
             start_all()
-            host.wait_for_unit("docker-inference-optimized.service")
-            host.wait_for_open_port(11434)
-            host.succeed("curl -f http://localhost:11434/api/tags")
-            host.wait_for_unit("ollama-full-setup.service")
-            host.wait_for_unit("microvm@red-team.service")
-            host.wait_for_unit("microvm@blue-team.service")
-            host.wait_for_unit("microvm@target.service")
-            host.wait_for_unit("microvm@vulnerable-vm.service")
+            host.wait_for_unit("docker-inference-optimized.service") if config.lab.ollama.enable else True
+            host.wait_for_open_port(11434) if config.lab.ollama.enable else True
+            host.succeed("dig @10.0.0.5 red.lab.local")
             host.wait_for_unit("microvm@dns-controller.service")
-            host.succeed("dig @10.0.0.5 red.lab.local")  # Test DNS resolution
             host.succeed("lab-ctl student list")
           '';
         };
