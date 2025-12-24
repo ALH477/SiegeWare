@@ -1,4 +1,4 @@
-# AI Agents Educational Lab
+# SiegeWare Educational Lab
 
 A declarative, reproducible cybersecurity simulation environment for studying AI-assisted offensive and defensive security practices.
 
