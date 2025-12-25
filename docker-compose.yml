@@ -1,0 +1,181 @@
+# HydraMesh AI Agents Lab - Docker Compose Configuration
+# 
+# Copyright (C) 2025 DeMoD LLC - GPL-3.0
+#
+# Usage:
+#   docker-compose up -d          # Start all services
+#   docker-compose logs -f        # View logs
+#   docker-compose exec red bash  # Shell into red team agent
+#   docker-compose down           # Stop all services
+
+version: '3.8'
+
+services:
+  # ════════════════════════════════════════════════════════════════════════════
+  # Red Team Agent
+  # ════════════════════════════════════════════════════════════════════════════
+  red:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hydramesh-red
+    hostname: red-agent
+    networks:
+      labnet:
+        ipv4_address: 10.0.0.101
+    ports:
+      - "7777:7777/udp"
+    volumes:
+      - red-data:/var/lib/hydramesh
+      - ./hydramesh:/opt/hydramesh/lisp:ro
+      - ./agent-tools:/opt/hydramesh/agent-tools:ro
+    environment:
+      - HYDRAMESH_NODE_ID=red-agent
+      - HYDRAMESH_UDP_PORT=7777
+      - AGENT_TYPE=red
+      - PEER_HOST=10.0.0.102
+      - PEER_PORT=7778
+    command: ["python", "-c", "from agent_tools.hydramesh import HydraMeshNode; import time; n=HydraMeshNode('red-agent', port=7777); n.add_peer('blue-agent', '10.0.0.102', 7778); n.start(); print('Red agent running...'); [time.sleep(1) for _ in iter(int, 1)]"]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import socket; s=socket.socket(socket.AF_INET,socket.SOCK_DGRAM); s.bind(('',7777)); s.close()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # Blue Team Agent
+  # ════════════════════════════════════════════════════════════════════════════
+  blue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hydramesh-blue
+    hostname: blue-agent
+    networks:
+      labnet:
+        ipv4_address: 10.0.0.102
+    ports:
+      - "7778:7778/udp"
+    volumes:
+      - blue-data:/var/lib/hydramesh
+      - ./hydramesh:/opt/hydramesh/lisp:ro
+      - ./agent-tools:/opt/hydramesh/agent-tools:ro
+    environment:
+      - HYDRAMESH_NODE_ID=blue-agent
+      - HYDRAMESH_UDP_PORT=7778
+      - AGENT_TYPE=blue
+      - PEER_HOST=10.0.0.101
+      - PEER_PORT=7777
+    command: ["python", "-c", "from agent_tools.hydramesh import HydraMeshNode; import time; n=HydraMeshNode('blue-agent', port=7778); n.add_peer('red-agent', '10.0.0.101', 7777); n.start(); print('Blue agent running...'); [time.sleep(1) for _ in iter(int, 1)]"]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import socket; s=socket.socket(socket.AF_INET,socket.SOCK_DGRAM); s.bind(('',7778)); s.close()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # Target VM (Vulnerable Service)
+  # ════════════════════════════════════════════════════════════════════════════
+  target:
+    image: vulnerables/web-dvwa:latest
+    container_name: hydramesh-target
+    hostname: target
+    networks:
+      labnet:
+        ipv4_address: 10.0.0.103
+    ports:
+      - "8080:80"
+    environment:
+      - MYSQL_PASS=dvwa
+    restart: unless-stopped
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # Lab Controller (API Server)
+  # ════════════════════════════════════════════════════════════════════════════
+  controller:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hydramesh-controller
+    hostname: lab-controller
+    networks:
+      labnet:
+        ipv4_address: 10.0.0.10
+    ports:
+      - "5000:5000"
+    volumes:
+      - controller-data:/var/lib/hydramesh
+      - ./packages/lab-controller:/opt/lab-controller:ro
+      - ./agent-tools:/opt/hydramesh/agent-tools:ro
+    environment:
+      - LAB_ROOT=/var/lib/hydramesh
+      - OLLAMA_URL=http://ollama:11434
+      - PYTHONPATH=/opt/hydramesh/agent-tools:/opt/lab-controller
+    command: ["python", "/opt/lab-controller/lab-controller.py", "student", "list"]
+    restart: unless-stopped
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # Ollama LLM Server (Optional - for AI agent responses)
+  # ════════════════════════════════════════════════════════════════════════════
+  ollama:
+    image: ollama/ollama:latest
+    container_name: hydramesh-ollama
+    hostname: ollama
+    networks:
+      labnet:
+        ipv4_address: 10.0.0.20
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    restart: unless-stopped
+    profiles:
+      - gpu
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # Ollama CPU-only (for systems without GPU)
+  # ════════════════════════════════════════════════════════════════════════════
+  ollama-cpu:
+    image: ollama/ollama:latest
+    container_name: hydramesh-ollama-cpu
+    hostname: ollama
+    networks:
+      labnet:
+        ipv4_address: 10.0.0.20
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    restart: unless-stopped
+    profiles:
+      - cpu
+
+# ════════════════════════════════════════════════════════════════════════════
+# Networks
+# ════════════════════════════════════════════════════════════════════════════
+networks:
+  labnet:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.0.0.0/24
+          gateway: 10.0.0.1
+
+# ════════════════════════════════════════════════════════════════════════════
+# Volumes
+# ════════════════════════════════════════════════════════════════════════════
+volumes:
+  red-data:
+  blue-data:
+  controller-data:
+  ollama-data:

@@ -1,519 +1,614 @@
-# SiegeWare Educational Lab
+# SiegeWare Educational AI Agents Lab
 
 A declarative, reproducible cybersecurity simulation environment for studying AI-assisted offensive and defensive security practices.
 
-```ascii
+```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                       Host Machine (NixOS)                                  │
 │                                                                             │
 │  ┌─────────────────────────────┐                                            │
-│  │ Ollama Container            │   ← GPU/CPU • Runs red & blue agents     │
+│  │ Ollama Container            │   ← GPU/CPU • Runs red & blue agents       │
 │  │ (localhost:11434)           │                                            │
 │  └─────────────────────────────┘                                            │
 │                                                                             │
-│  ┌───────────────┐   ┌───────────────┐   ┌───────────────┐   ┌───────────────┐
-│  │ Red Team VM   │   │ Blue Team VM  │   │ Target VM     │   │ Vulnerable VM │
-│  │ 10.0.0.101    │   │ 10.0.0.102    │   │ 10.0.0.103    │   │ 10.0.0.104    │
-│  │ Offensive     │   │ Defensive     │   │ Clean victim  │   │ Weak system   │
-│  └───────────────┘   └───────────────┘   └───────────────┘   └───────────────┘
-│         │                   │                   │                   │
-│         └───────────────────┴───────────────────┴───────────────────┘
-│                           br0 bridge (10.0.0.1/24)                         │
-│                                                                             │
-│                       DNS Controller VM (10.0.0.5)                         │
-│                           • BIND9 authoritative DNS                          │
-│                           • All name resolution goes through here           │
+│  ┌───────────────┐   ┌───────────────┐   ┌───────────────┐                  │
+│  │ Red Team VM   │   │ Blue Team VM  │   │ Target VM     │                  │
+│  │ 10.0.0.101    │   │ 10.0.0.102    │   │ 10.0.0.103    │                  │
+│  │ Offensive     │   │ Defensive     │   │ Victim        │                  │
+│  └───────────────┘   └───────────────┘   └───────────────┘                  │
+│         │                   │                   │                           │
+│         └───────────────────┴───────────────────┘                           │
+│                    br0 bridge (10.0.0.1/24)                                 │
 └─────────────────────────────────────────────────────────────────────────────┘
-
-Simple I/O Flow:
-You → lab-ctl CLI → Ollama (AI brain) → Red/Blue agent thinks → calls safe tools
-→ runs inside MicroVM → result loops back → you see output
-All network stays inside br0 — no real Internet, no breakout.
 ```
 
-```mermaid
-graph TD
-    A[You / lab-ctl CLI] --> B[Ollama Container<br>GPU/CPU Inference]
-    B --> C[Red Team Agent<br>10.0.0.101]
-    B --> D[Blue Team Agent<br>10.0.0.102]
-    C --> E[Target VM<br>10.0.0.103]
-    C --> F[Vulnerable VM<br>10.0.0.104]
-    D --> F
-    E --> G[DNS Controller<br>10.0.0.5<br>BIND9]
-    F --> G
-    subgraph "Isolated Lab Network"
-        E
-        F
-        G
-        C
-        D
-    end
-    subgraph "Host"
-        B
-        A
-    end
-```
+## 🚀 Quick Start
 
-## Introducing SiegeWare
-
-### The Concept
-
-**SiegeWare** (noun) /siːdʒˈwɛər/  
-A term coined by DeMoD LLC in 2025 to describe **AI-powered autonomous cyber warfare simulation platforms** designed for controlled, ethical, and educational replication of real-world offensive and defensive cybersecurity operations.
-
-SiegeWare platforms are defined by:
-
-- Autonomous or semi-autonomous AI agents performing red team (offensive) and blue team (defensive) roles
-- Realistic, isolated network topology built with reproducible infrastructure
-- Hardware-accelerated local large language model (LLM) inference for agent reasoning and decision-making
-- Progressive, outcome-focused learning modules with verifiable assessment
-- Strict safety boundaries that prevent any real-world harm or external impact
-- Explicit emphasis on both technical mastery and ethical responsibility
-
-### Why "SiegeWare"?
-
-The name combines two evocative elements:
-
-- **Siege** — referencing the historical military tactic of surrounding and methodically reducing a fortified position, paralleling modern cyber campaigns that involve reconnaissance, persistence, lateral movement, and objective achievement.
-- **Ware** — derived from "software" and "malware", underscoring that this is a purely software-defined, AI-augmented simulation environment, not physical warfare.
-
-SiegeWare represents the responsible convergence of artificial intelligence, cybersecurity training, and ethical simulation technology — a digital training platform that prepares defenders and helps students understand adversary tactics without ever crossing into real-world harm.
-
-### This Lab as a SiegeWare Simulator
-
-The **Universal Educational AI Agents Lab** is intentionally engineered as a **full-featured SiegeWare simulator**, with the core mission of preparing the next generation of IT security professionals.
-
-Key SiegeWare characteristics implemented in this platform:
-
-1. **Autonomous Agent Behavior**  
-   Red and blue team agents leverage local LLMs to independently reason, plan, and execute actions within the simulation.
-
-2. **Realistic Attack/Defense Lifecycle**  
-   Five progressive labs mirror actual cyber kill chains, defensive workflows, and incident response processes.
-
-3. **Isolated, High-Fidelity Environment**  
-   MicroVMs, containerized services, and virtual networking create production-like conditions while guaranteeing complete isolation.
-
-4. **Hardware-Agnostic Scalability**  
-   Runs natively on consumer laptops (Apple Silicon via Asahi Linux, Intel/AMD/NVIDIA GPUs) and scales to classroom servers or research clusters.
-
-5. **Verifiable Educational Outcomes**  
-   Structured objectives, automated verification scripts, progress tracking, and instructor oversight tools.
-
-6. **Ethical & Safety Framework**  
-   Explicit system prompts, network containment, no external connectivity, and repeated emphasis on responsible use and simulation-only actions.
-
-### Target Audience & Educational Impact
-
-This SiegeWare simulator is designed for:
-
-- University cybersecurity programs (undergraduate and graduate levels)
-- Professional training organizations (SANS, Offensive Security, EC-Council, etc.)
-- Corporate red team / blue team / purple team training programs
-- Independent learners preparing for certifications (OSCP, PNPT, CRTP, CEH, etc.)
-- AI security researchers studying agent behavior in adversarial environments
-
-By releasing this platform as free, open-source software under GPL-3.0, DeMoD LLC seeks to:
-
-- Democratize access to high-fidelity AI-augmented cybersecurity training
-- Accelerate the development of AI-literate security professionals
-- Promote ethical understanding of both offensive and defensive capabilities
-- Establish a widely adopted reference platform for modern AI-security education
-
-**SiegeWare is not entertainment. It is a professional training environment.**
-
-The future of cybersecurity will be shaped by those who understand both how AI can attack systems and how AI can defend them. This lab exists to train that next generation — safely, responsibly, and effectively.
-
-## Overview
-
-This lab offers a secure, fully isolated environment to study the application of artificial intelligence in cybersecurity through structured red team vs. blue team simulations. Built with Nix and NixOS, it ensures complete reproducibility across deployments and supports a wide range of hardware platforms.
-
-### Learning Objectives
-
-By completing the full lab series, participants will be able to:
-
-1. Use AI-assisted methods to perform network reconnaissance and asset enumeration
-2. Identify and safely simulate exploitation of privilege escalation vectors
-3. Implement defensive monitoring, anomaly detection, and incident response using AI agents
-4. Execute multi-stage attack campaigns while practicing operational security
-5. Optimize autonomous AI agents for competitive red vs. blue scenarios
-6. Critically evaluate the role, strengths, limitations, and ethical implications of AI in security operations
-
-### Core Capabilities
-
-- **Fully declarative infrastructure** — 100% reproducible via Nix flakes
-- **Broad hardware compatibility** — x86_64 (NVIDIA CUDA, AMD ROCm, Intel Arc, CPU) and aarch64 (Apple Silicon Metal)
-- **GPU-accelerated inference** — Local LLMs via Ollama
-- **Strong isolation** — MicroVM-based execution environments with network containment
-- **Structured curriculum** — Five progressive labs with clear objectives and verification
-- **Integrated management tooling** — `lab-ctl` CLI for students and instructors
-
-## Deployment Instructions
-
-### Prerequisites
-
-- Nix package manager (https://nixos.org/download)
-- Hardware:
-  - Minimum: 16 GB RAM, 4-core CPU
-  - Recommended: 32+ GB RAM, GPU (NVIDIA/AMD/Intel) or Apple Silicon
-- Basic Linux terminal proficiency
-
-### Step-by-Step Deployment
-**Best plug and play UX with [Oligarchy NixOS lite](https://github.com/ALH477/Oligarchy-lite)**
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/ALH477/ai-agents-lab.git
-   cd ai-agents-lab
-   ```
-
-2. **Deploy the lab infrastructure**
-   ```bash
-   nix run .#deploy
-   ```
-   This command:
-   - Builds and activates the NixOS configuration
-   - Starts the Ollama inference container
-   - Launches MicroVMs (red-team, blue-team, target, vulnerable-vm, dns-controller)
-   - Configures isolated networking and DNS authority
-
-3. **Verify deployment**
-   ```bash
-   nix run .#status
-   ```
-   Expected output includes:
-   - Ollama service running
-   - All MicroVMs active
-   - DNS controller responding (dig @10.0.0.5 red.lab.local)
-   - Loaded models listed
-
-4. **Access student guide**
-   ```bash
-   nix run .#student-quickstart
-   ```
-
-5. **(Optional) Build portable Docker image**
-   ```bash
-   nix build .#inferenceImage
-   docker load < result
-   ```
-
-### Post-Deployment Checks
-
-- Ollama API: `curl http://localhost:11434/api/tags`
-- DNS resolution: `dig @10.0.0.5 red.lab.local`
-- VM connectivity: `ping 10.0.0.101` (from host or another VM)
-
-## Laboratory Exercises
-
-### Lab 01: Network Reconnaissance
-**Level**: Foundational | **Duration**: 30–45 minutes | **Points**: 100
-
-**Focus**: AI-assisted enumeration and intelligence gathering  
-**Key Skills**: Port scanning, service fingerprinting, OS detection, banner grabbing  
-**Learning Outcomes**: Understand reconnaissance phase of penetration testing; interpret scan results; apply AI for tool selection and analysis
-
-### Lab 02: Privilege Escalation
-**Level**: Intermediate | **Duration**: 60–90 minutes | **Points**: 150
-
-**Focus**: Identification and simulation of privilege escalation vectors  
-**Key Skills**: SUID/SGID binary analysis, permission misconfiguration, service exploitation  
-**Learning Outcomes**: Recognize common escalation paths; assess risk of misconfigurations; practice controlled exploitation
-
-### Lab 03: Security Monitoring & Detection
-**Level**: Intermediate | **Duration**: 45–60 minutes | **Points**: 125
-
-**Focus**: Defensive operations and anomaly detection  
-**Key Skills**: Log analysis, network monitoring, alert rule creation  
-**Learning Outcomes**: Build foundational detection capabilities; understand blue team workflows; apply AI to accelerate threat identification
-
-### Lab 04: Advanced Red Team Operations
-**Level**: Advanced | **Duration**: 90–120 minutes | **Points**: 200
-
-**Focus**: Execution of multi-stage attack campaigns  
-**Key Skills**: Stealth reconnaissance, persistence, lateral movement, data exfiltration  
-**Learning Outcomes**: Conduct structured attacks; apply operational security practices; understand evasion techniques
-
-### Lab 05: Autonomous AI Red vs Blue Competition
-**Level**: Advanced | **Duration**: 120+ minutes | **Points**: 300
-
-**Focus**: Strategy optimization for competing autonomous AI agents  
-**Key Skills**: Prompt engineering, performance tuning, attack-defense balance  
-**Learning Outcomes**: Explore emergent behavior in AI security systems; understand trade-offs between aggression and stealth
-
-## Instructor Guide
-
-### Role & Responsibilities
-
-Instructors serve as facilitators of learning, not just content deliverers. Your role includes:
-
-- Setting clear expectations for ethical use
-- Monitoring student progress and intervening when needed
-- Providing context and real-world relevance
-- Assessing learning outcomes fairly and consistently
-- Customizing labs to match course objectives
-
-### Preparation Checklist
-
-1. Deploy the lab on instructor workstation/server
-   ```bash
-   nix run .#deploy
-   ```
-
-2. Verify all components
-   ```bash
-   nix run .#status
-   ```
-
-3. Run instructor setup script
-   ```bash
-   nix run .#instructor-setup
-   ```
-
-4. Create student accounts or environments (future feature)
-   - Current: single shared lab (recommended for initial classes)
-   - Planned: per-student MicroVM cloning
-
-5. Review lab materials
-   - /var/lib/ai-agents-lab/labs/
-   - Each lab has lab.json, starter.py, verify.py
-
-### Class Session Structure (Recommended)
-
-**Duration**: 2–3 hours per lab (including debrief)
-
-1. **Introduction (10–15 min)**
-   - State learning objectives
-   - Review ethical guidelines
-   - Explain lab controller commands
-
-2. **Guided Start (15–20 min)**
-   - Students run `lab-ctl student start <lab-id>`
-   - Instructor walks through starter code
-
-3. **Independent Work (60–120 min)**
-   - Students interact with agents
-   - Use `lab-ctl student status` and `verify`
-   - Instructor circulates, answers questions
-
-4. **Debrief & Discussion (20–30 min)**
-   - Share findings (screenshots, agent conversations)
-   - Discuss what worked, what failed
-   - Highlight defensive lessons from offensive actions
-
-5. **Assessment**
-   - Run `lab-ctl student verify` on student machines
-   - Instructor reviews outputs
-   - Use `lab-ctl instructor grade <student-id>` (future)
-
-### Monitoring & Intervention
-
-- **Real-time monitoring**:
-  ```bash
-  lab-ctl instructor monitor student-01
-  ```
-
-- **Class-wide stats**:
-  ```bash
-  lab-ctl instructor stats
-  ```
-
-- **Reset stuck student**:
-  ```bash
-  lab-ctl instructor reset student-01
-  ```
-
-### Customization Tips
-
-- Add new labs by creating directories under `packages/lab-controller/labs/`
-- Modify objectives/hints in `lab.json`
-- Extend verification logic in `verify.py`
-- Adjust DNS records in `modules/ai-agents-env.nix` for custom domains
-
-### Grading Recommendations
-
-- 40% Objective completion (via `verify`)
-- 30% Quality of documentation / notes
-- 20% Ethical reasoning demonstrated
-- 10% Creativity / sophistication of approach
-
-## System Architecture
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                     Host System                              │
-│  ┌────────────────────────────────────────────────────────┐ │
-│  │  Ollama Container (GPU-accelerated inference)          │ │
-│  │  - red-qwen-agent   (Offensive AI)                     │ │
-│  │  - blue-llama-agent (Defensive AI)                     │ │
-│  └────────────────────────────────────────────────────────┘ │
-│                                                              │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌───────────────┐
-│  │  Red Team   │  │  Blue Team  │  │   Target    │  │  Vulnerable │  │ DNS Controller│
-│  │  MicroVM    │  │  MicroVM    │  │   MicroVM   │  │     VM      │  │   (BIND9)     │
-│  │  10.0.0.101 │  │  10.0.0.102 │  │  10.0.0.103 │  │  10.0.0.104 │  │   10.0.0.5    │
-│  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘  └───────────────┘
-│         │                 │                 │                 │                 │
-│         └─────────────────┴─────────────────┴─────────────────┴─────────────────┘
-│                     br0 (10.0.0.1/24) – Isolated Lab Network                   │
-└─────────────────────────────────────────────────────────────┘
-```
-
-## Security & Ethical Considerations
-
-### Isolation & Safety Features
-
-- MicroVMs provide kernel-level isolation from host
-- Network traffic confined to virtual bridge (br0)
-- No direct Internet access from any VM
-- DNS resolution controlled by isolated DNS controller
-- Environment fully resettable via rebuild
-- All configurations declarative and auditable
-
-### Responsible Use Policy
-
-Participants must:
-
-- Use knowledge gained solely for authorized educational or professional purposes
-- Never apply techniques to production systems without explicit permission
-- Adhere strictly to ethical and legal guidelines
-- Report discovered vulnerabilities responsibly
-
-## Recommended Learning Path
-
-### Module 1: Foundations (Weeks 1–2)
-- Lab 01 – Network Reconnaissance
-- Focus: AI-assisted enumeration, tool selection
-
-### Module 2: Offensive Security (Weeks 3–4)
-- Lab 02 – Privilege Escalation
-- Focus: Vulnerability identification, exploitation techniques
-
-### Module 3: Defensive Security (Weeks 5–6)
-- Lab 03 – Security Monitoring & Detection
-- Focus: Log analysis, anomaly detection, alerting
-
-### Module 4: Advanced Operations (Weeks 7–8)
-- Lab 04 – Multi-stage Attack Campaigns
-- Focus: Persistence, lateral movement, evasion
-
-### Module 5: Autonomous Systems (Weeks 9–10)
-- Lab 05 – AI Red vs Blue Competition
-- Focus: Strategy optimization, emergent behavior
-
-## Educational Outcomes
-
-By completing this lab series, participants will develop:
-
-### Technical Competencies
-- Network reconnaissance and enumeration
-- Privilege escalation analysis
-- Security monitoring and incident detection
-- Multi-stage attack execution
-- AI agent orchestration and tuning
-
-### Conceptual Understanding
-- Attack surface mapping
-- Defense-in-depth principles
-- Operational security (OpSec)
-- AI limitations in security contexts
-- Ethical considerations in offensive security
-
-### Professional Skills
-- Structured documentation and reporting
-- Risk assessment and prioritization
-- Responsible disclosure practices
-- Prompt engineering for security tasks
-
-## Troubleshooting Guide
-
-### Ollama Not Responding
+### Option 1: Nix Flakes (Recommended - Bit-for-Bit Reproducible)
 
 ```bash
-sudo systemctl status docker-inference-optimized
-sudo journalctl -u docker-inference-optimized -f
-sudo systemctl restart docker-inference-optimized
+# Enter development environment
+nix develop github:ALH477/ai-agents-lab
+
+# Deploy lab infrastructure
+nix run github:ALH477/ai-agents-lab#deploy
+
+# Check status
+nix run github:ALH477/ai-agents-lab#status
+
+# Start using
+lab-ctl student list
+lab-ctl student start lab-01-recon
 ```
 
-### MicroVMs Not Starting
+### Option 2: Clone & Develop
 
 ```bash
-systemctl list-units 'microvm@*' --no-pager
-sudo systemctl start microvm@red-team
-sudo systemctl start microvm@blue-team
-sudo systemctl start microvm@target
-sudo systemctl start microvm@vulnerable-vm
-sudo systemctl start microvm@dns-controller
+git clone https://github.com/ALH477/ai-agents-lab.git
+cd ai-agents-lab
+
+# Enter development shell
+nix develop
+
+# Deploy
+nix run .#deploy
+
+# Start first lab
+lab-ctl student start lab-01-recon
 ```
 
-### DNS Resolution Issues
+### Option 3: NixOS Module
+
+```nix
+# flake.nix
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
+    siegeware.url = "github:ALH477/ai-agents-lab";
+  };
+  
+  outputs = { nixpkgs, siegeware, ... }: {
+    nixosConfigurations.myhost = nixpkgs.lib.nixosSystem {
+      modules = [
+        siegeware.nixosModules.default
+        {
+          services.siegeware = {
+            enable = true;
+            enableOllama = true;
+            enableNvidia = true;  # For GPU acceleration
+          };
+        }
+      ];
+    };
+  };
+}
+```
+
+### Option 4: Docker (Non-NixOS Systems)
 
 ```bash
-sudo systemctl status microvm@dns-controller
-dig @10.0.0.5 red.lab.local
-ssh root@10.0.0.101 "dig red.lab.local"
+# Build and run with Docker Compose
+docker-compose up -d
+
+# Enter red team container
+docker-compose exec red bash
 ```
 
-### Lab Controller Issues
+## 📚 Lab Exercises
+
+| Lab | Name | Difficulty | Points | Duration |
+|-----|------|------------|--------|----------|
+| 01 | Network Reconnaissance | Foundational | 100 | 45 min |
+| 02 | Privilege Escalation | Intermediate | 150 | 90 min |
+| 03 | Security Monitoring | Intermediate | 125 | 60 min |
+| 04 | Advanced Red Team | Advanced | 200 | 120 min |
+| 05 | AI Red vs Blue | Advanced | 300 | 180 min |
+
+## 🛠️ Available Commands
+
+### Student Commands
+```bash
+lab-ctl student list                    # List available labs
+lab-ctl student start lab-01-recon      # Start a lab
+lab-ctl student status                  # Check progress
+lab-ctl student hint                    # Get hints
+lab-ctl student verify                  # Verify completion
+lab-ctl student chat red "scan target"  # Chat with red agent
+lab-ctl student chat blue "check logs"  # Chat with blue agent
+```
+
+### Instructor Commands
+```bash
+lab-ctl instructor dashboard            # Overview of all students
+lab-ctl instructor monitor student-01   # Watch specific student
+lab-ctl instructor reset student-01     # Reset student environment
+lab-ctl instructor stats                # Lab statistics
+lab-ctl instructor grade student-01     # Generate grade report
+```
+
+### Nix App Commands
+```bash
+nix run .#deploy              # Deploy infrastructure
+nix run .#status              # Check system status
+nix run .#student-quickstart  # Show student guide
+nix run .#instructor-setup    # Setup instructor environment
+nix run .#lab-ctl             # Run lab controller
+```
+
+## 📁 Project Structure
+
+```
+ai-agents-lab/
+├── flake.nix                    # Nix flake (entry point)
+├── modules/
+│   └── ai-agents-env.nix        # NixOS module for lab environment
+├── packages/
+│   └── lab-controller/
+│       └── lab-controller.py    # Student/instructor CLI tool
+├── agent-tools/
+│   ├── __init__.py              # Package exports
+│   ├── base.py                  # Base tool classes and utilities
+│   ├── registry.py              # Tool registry and executor
+│   └── tools/
+│       ├── port_scanner.py      # TCP port scanning
+│       ├── web_request.py       # HTTP requests
+│       ├── dns_lookup.py        # DNS queries
+│       ├── service_detector.py  # Service fingerprinting
+│       └── log_analyzer.py      # Log analysis (blue team)
+└── docs/                        # Documentation
+```
+
+## 🔧 Components
+
+### Lab Controller (`lab-ctl`)
+
+Command-line interface for students and instructors.
+
+**Student Commands:**
+```bash
+lab-ctl student list              # List available labs
+lab-ctl student start lab-01-recon  # Start a lab
+lab-ctl student hint              # Get hints
+lab-ctl student verify            # Check progress
+lab-ctl student chat red "scan the target"   # Talk to red agent
+lab-ctl student chat blue "analyze logs"     # Talk to blue agent
+lab-ctl student status            # View your progress
+```
+
+**Instructor Commands:**
+```bash
+lab-ctl instructor dashboard      # Overview of all students
+lab-ctl instructor monitor <id>   # Watch specific student
+lab-ctl instructor grade <id>     # Generate grade report
+lab-ctl instructor reset <id>     # Reset student environment
+lab-ctl instructor stats          # Lab statistics
+```
+
+### Agent Tools
+
+Extensible toolkit for AI agents with safety controls.
+
+```python
+from agent_tools import registry
+
+# List available tools
+print(registry.list_tools())
+
+# Execute a tool
+result = registry.execute(
+    "port_scanner",
+    target="10.0.0.103",
+    ports="22,80,443"
+)
+
+print(result.data)  # {'open_ports': [22, 80], ...}
+```
+
+**Available Tools:**
+| Tool | Category | Description |
+|------|----------|-------------|
+| `port_scanner` | Reconnaissance | TCP port scanning with nmap |
+| `web_request` | Reconnaissance | HTTP/HTTPS requests |
+| `dns_lookup` | Reconnaissance | DNS record queries |
+| `service_detector` | Reconnaissance | Service version detection |
+| `log_analyzer` | Defense | Log analysis and security events |
+
+### NixOS Module
+
+Deploy the complete lab environment:
+
+```nix
+# configuration.nix
+{
+  imports = [ ./modules/ai-agents-env.nix ];
+  
+  services.aiAgentsLab = {
+    enable = true;
+    enableNvidia = true;  # For NVIDIA GPUs
+    sshAuthorizedKeys = [ "ssh-rsa AAAA..." ];
+  };
+}
+```
+
+**Module Options:**
+| Option | Default | Description |
+|--------|---------|-------------|
+| `enable` | `false` | Enable the lab environment |
+| `hostIP` | `10.0.0.1` | Host IP in lab network |
+| `redTeamIP` | `10.0.0.101` | Red team VM IP |
+| `blueTeamIP` | `10.0.0.102` | Blue team VM IP |
+| `targetIP` | `10.0.0.103` | Target VM IP |
+| `ollamaPort` | `11434` | Ollama API port |
+| `enableNvidia` | `false` | Enable NVIDIA GPU support |
+| `enableAMD` | `false` | Enable AMD ROCm support |
+| `enableIntel` | `false` | Enable Intel GPU support |
+| `maxLoadedModels` | `5` | Max models in memory |
+| `numParallel` | `8` | Parallel inference requests |
+
+## 📚 Lab Exercises
+
+### Lab 01: Basic Network Reconnaissance
+- **Difficulty:** Beginner
+- **Points:** 100
+- **Objectives:** Port scanning, OS detection, service enumeration
+- **Skills:** nmap, banner grabbing, network mapping
+
+### Lab 02: Privilege Escalation Simulation
+- **Difficulty:** Intermediate
+- **Points:** 150
+- **Prerequisites:** Lab 01
+- **Objectives:** SUID discovery, permission analysis, privesc paths
+
+### Lab 03: Security Monitoring and Detection
+- **Difficulty:** Intermediate
+- **Points:** 125
+- **Prerequisites:** Lab 02
+- **Objectives:** Log analysis, anomaly detection, alerting
+
+### Lab 04: Advanced Penetration Testing
+- **Difficulty:** Advanced
+- **Points:** 200
+- **Prerequisites:** Lab 03
+- **Objectives:** Multi-stage attacks, persistence, evasion
+
+### Lab 05: AI Agent Competition
+- **Difficulty:** Advanced
+- **Points:** 300
+- **Prerequisites:** Lab 04
+- **Objectives:** Red vs Blue competition with AI assistance
+
+## 🔒 Security Features
+
+- **Network Isolation:** All tools restricted to `10.0.0.0/24` lab network
+- **Host Protection:** Host IP (`10.0.0.1`) blocked from all scans
+- **Rate Limiting:** Per-tool request limits prevent abuse
+- **Sandboxed Verification:** Lab verification scripts run in isolated environment
+- **File Locking:** Thread-safe session management
+- **Input Validation:** Strict parameter validation on all tools
+
+## 🛠 Development
+
+### Running Tests
+```bash
+nix develop
+pytest agent-tools/tests/ -v
+```
+
+### Code Formatting
+```bash
+black agent-tools/
+mypy agent-tools/
+```
+
+### Creating New Tools
+
+1. Create a new file in `agent-tools/tools/`:
+
+```python
+from agent_tools.base import (
+    BaseTool, ToolDefinition, ToolParameter, 
+    ToolResult, SafetyConstraints, ToolCategory, RiskLevel
+)
+
+class MyNewTool(BaseTool):
+    def get_definition(self) -> ToolDefinition:
+        return ToolDefinition(
+            name="my_tool",
+            description="What it does",
+            category=ToolCategory.RECONNAISSANCE,
+            risk_level=RiskLevel.LOW,
+            parameters=[
+                ToolParameter(
+                    name="target",
+                    type="string",
+                    description="Target IP",
+                    required=True
+                )
+            ]
+        )
+    
+    def validate(self, **kwargs) -> bool:
+        self.validate_target_ip(kwargs["target"])
+        return True
+    
+    def execute(self, **kwargs) -> ToolResult:
+        # Implementation
+        return ToolResult.success_result({"result": "data"})
+    
+    def get_safety_constraints(self) -> SafetyConstraints:
+        return SafetyConstraints()
+
+def get_tool() -> BaseTool:
+    return MyNewTool()
+```
+
+2. The tool will be auto-discovered on next import.
+
+## 📊 Monitoring (Optional)
+
+The module exposes metrics for Prometheus:
+- Port 9090: Prometheus
+- Port 3000: Grafana
+
+## 🐛 Bug Fixes from Original
+
+1. **NixOS Module (`ai-agents-env.nix`):**
+   - Fixed undefined `config` reference (added proper module signature)
+   - Fixed conflicting `hardware.graphics.extraPackages` with `lib.mkMerge`
+   - Added proper SSH key configuration
+
+2. **Lab Controller (`lab-controller.py`):**
+   - Added file locking for concurrent session access
+   - Sandboxed verification script execution
+   - Proper port count calculation for ranges
+
+3. **Port Scanner (`port_scanner.py`):**
+   - Fixed port count for range specifications (e.g., "1-1000")
+   - Added streaming/memory-efficient processing
+
+4. **Log Analyzer:**
+   - Memory-efficient file reading (no longer loads entire file)
+   - Streaming tail implementation for large logs
+
+## 🐳 Docker Deployment
+
+The easiest way to run the lab without Nix packaging issues:
+
+### Quick Start
 
 ```bash
-which lab-ctl
-ls -la /var/lib/ai-agents-lab/labs/
-sudo chmod -R 755 /var/lib/ai-agents-lab/
+# Build and start all containers
+docker-compose up -d
+
+# View status
+docker-compose ps
+
+# View logs
+docker-compose logs -f red
+
+# Enter red team container
+docker-compose exec red bash
+
+# Stop everything
+docker-compose down
 ```
 
-### Network Connectivity
+### Container Architecture
+
+| Container | IP | Port | Purpose |
+|-----------|-----|------|---------|
+| `red` | 10.0.0.101 | 7777/udp | Red team agent |
+| `blue` | 10.0.0.102 | 7778/udp | Blue team agent |
+| `target` | 10.0.0.103 | 8080/tcp | Vulnerable web app (DVWA) |
+| `controller` | 10.0.0.10 | 5000/tcp | Lab controller API |
+| `ollama` | 10.0.0.20 | 11434/tcp | LLM inference (optional) |
+
+### GPU Support
 
 ```bash
-ip addr show br0
-sudo systemctl status dhcpd4
-sudo systemctl restart systemd-networkd
+# With NVIDIA GPU
+docker-compose --profile gpu up -d
+
+# CPU only
+docker-compose --profile cpu up -d
 ```
 
-## Contributing
+### Build StreamDB Library
 
-### Adding New Labs
+```bash
+cd streamdb
+make
+make install  # Installs to /usr/local/lib
+make test     # Run tests
+```
 
-1. Create lab directory structure
-2. Define `lab.json` metadata
-3. Add optional `starter.py`, `verify.py`, `README.md`
-4. Test with:
-   ```bash
-   lab-ctl student start <new-lab-id>
-   lab-ctl student verify
-   ```
+## 🖥️ Emacs Interface
 
-### Reporting Issues
+Full-featured Emacs integration for the lab.
 
-Provide:
-- Clear problem description
-- Steps to reproduce
-- Expected vs. observed behavior
-- System info (architecture, Nix version, hardware)
+### Installation
 
-## License
+```elisp
+(use-package hydramesh
+  :load-path "/path/to/ai-agents-lab/emacs"
+  :bind ("C-c H" . hydramesh)
+  :custom
+  (hydramesh-home "/opt/hydramesh"))
+```
 
-Copyright © 2025 DeMoD LLC  
-Licensed under the GNU General Public License v3.0 (GPL-3.0)
+### Key Commands
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+| Key | Command | Description |
+|-----|---------|-------------|
+| `C-c H` | `hydramesh` | Open Hydra menu |
+| `C-c h t` | `hydramesh-tool-execute` | Execute security tool |
+| `C-c h p` | `hydramesh-port-scan` | Quick port scan |
+| `C-c h a` | `hydramesh-agent-chat` | Chat with agent |
+| `C-c h s` | `hydramesh-lab-start` | Start a lab |
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+### SLIME Integration
 
-You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
+```elisp
+M-x slime                    ; Start Lisp REPL
+M-x hydramesh-slime-load     ; Load HydraMesh
+M-x hydramesh-slime-init     ; Initialize node
+M-x hydramesh-slime-status   ; Check status
+```
 
-## Acknowledgments
+### Docker Control
 
-- Ollama project — efficient local LLM inference
-- MicroVM.nix — lightweight virtualization
-- NixOS ecosystem — declarative system configuration
-- Educational contributors and reviewers
+```elisp
+M-x hydramesh-docker-status  ; Container status
+M-x hydramesh-docker-start   ; Start containers
+M-x hydramesh-docker-stop    ; Stop containers
+M-x hydramesh-docker-logs    ; View service logs
+```
 
-## Contact & Support
+## 🔗 HydraMesh Integration
 
-- Documentation — This README
-- Troubleshooting — See section above
-- Issues — GitHub issue tracker
-- Community — (Discord/forum link forthcoming)
+The lab integrates [HydraMesh](https://github.com/ALH477/DeMoD-Communication-Framework), a high-performance Lisp-based communication framework, for real-time agent coordination.
 
-This SiegeWare simulator is designed to support rigorous, structured learning in AI security. Feedback and contributions are welcome to enhance its educational impact.
+### Architecture
 
+```
+┌─────────────────┐     HydraMesh UDP      ┌─────────────────┐
+│   Red Agent     │◄─────────────────────►│   Blue Agent    │
+│   (10.0.0.101)  │    Binary Protocol     │   (10.0.0.102)  │
+│   Port 7777     │                        │   Port 7778     │
+└────────┬────────┘                        └────────┬────────┘
+         │                                          │
+         │         StreamDB Persistence             │
+         └──────────────►◄──────────────────────────┘
+                    hydramesh.db
+```
+
+### Features
+
+- **UDP Transport**: Low-latency (<10ms) binary messaging
+- **Reliable Delivery**: ACK-based retransmission for critical events
+- **StreamDB**: Embedded key-value store for state persistence
+- **Protocol Buffers**: 10-100x faster than JSON serialization
+
+### Message Types
+
+| Code | Type | Description | Reliable |
+|------|------|-------------|----------|
+| 1 | POSITION | Agent position updates | No |
+| 3 | GAME_EVENT | Simulation events | Yes |
+| 16 | AGENT_ACTION | Tool execution requests | Yes |
+| 17 | AGENT_RESULT | Tool execution results | Yes |
+| 18 | THREAT_ALERT | Blue team threat detection | Yes |
+| 19 | RECON_DATA | Red team reconnaissance | Yes |
+
+### Python API
+
+```python
+from agent_tools.hydramesh import HydraMeshNode, AgentCommunicationBridge
+
+# Create a node
+node = HydraMeshNode(node_id="red-agent", port=7777)
+node.add_peer("blue-agent", "10.0.0.102", 7778)
+node.start()
+
+# Send position (unreliable, fast)
+node.send_position(100.0, 50.0, 25.0)
+
+# Send event (reliable)
+node.send_event(3, "SCAN_COMPLETE|10.0.0.103")
+
+# Share reconnaissance
+node.send_recon_data("10.0.0.103", {
+    "open_ports": [22, 80, 443],
+    "os": "Linux"
+})
+
+node.stop()
+```
+
+### Lisp API (Native HydraMesh)
+
+```lisp
+;; Load HydraMesh
+(load "hydramesh/hydramesh.lisp")
+
+;; Initialize
+(dcf-init "hydramesh/config.json")
+(dcf-start)
+
+;; Add peer
+(dcf-add-peer "blue-agent" "10.0.0.102" 7778)
+
+;; Send position
+(dcf-send-position "red-agent" 100.0 50.0 25.0)
+
+;; Send game event
+(dcf-send-game-event 3 "SCAN_COMPLETE|10.0.0.103")
+
+;; Get metrics
+(dcf-get-metrics)
+
+(dcf-stop)
+```
+
+### Tool Usage
+
+```bash
+# Initialize coordination
+agent-tool-test agent_coordination --action=init --agent_type=red
+
+# Connect to blue agent
+agent-tool-test agent_coordination --action=connect \
+    --peer_host=10.0.0.102 --peer_port=7778
+
+# Share recon data
+agent-tool-test agent_coordination --action=share_recon \
+    --target=10.0.0.103 \
+    --data='{"ports": [22, 80], "services": ["ssh", "http"]}'
+
+# Get status
+agent-tool-test agent_coordination --action=get_status
+```
+
+### StreamDB
+
+HydraMesh uses StreamDB for persistent storage:
+
+```python
+from agent_tools.hydramesh import StreamDB
+
+db = StreamDB("/var/lib/ai-agents-lab/hydramesh.db")
+
+# Store data
+db.insert("agent:red:state", '{"position": [100, 50, 25]}')
+
+# Retrieve data
+state = db.get("agent:red:state")
+
+# Delete
+db.delete("agent:red:state")
+
+db.close()
+```
+
+### DSL Modules (hydramesh.core)
+
+The `hydramesh.core` file provides composable domain-specific languages:
+
+| DSL | Purpose |
+|-----|---------|
+| `hydramesh.game-net` | Multiplayer game networking |
+| `hydramesh.audio-stream` | Real-time audio streaming |
+| `hydramesh.sensor-net` | IoT sensor networks |
+| `hydramesh.reliability` | Retry, circuit breaker patterns |
+| `hydramesh.metrics` | Observability and monitoring |
+
+## 📄 License
+
+GPL-3.0 © 2025 DeMoD LLC
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Run tests and linting
+4. Submit a pull request
