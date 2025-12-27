@@ -44,7 +44,7 @@ lab-ctl student start lab-01-recon
 ### Option 2: Clone & Develop
 
 ```bash
-git clone https://github.com/ALH477/ai-agents-lab.git
+git clone https://github.com/ALH477/SiegeWare.git
 cd ai-agents-lab
 
 # Enter development shell
