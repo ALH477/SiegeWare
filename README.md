@@ -28,7 +28,7 @@ A declarative, reproducible cybersecurity simulation environment for studying AI
 
 ```bash
 # Enter development environment
-nix develop github:ALH477/ai-agents-lab
+nix develop github:ALH477/SiegeWare
 
 # Deploy lab infrastructure
 nix run github:ALH477/ai-agents-lab#deploy
@@ -64,7 +64,7 @@ lab-ctl student start lab-01-recon
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
-    siegeware.url = "github:ALH477/ai-agents-lab";
+    siegeware.url = "github:ALH477/SiegeWare";
   };
   
   outputs = { nixpkgs, siegeware, ... }: {
@@ -430,7 +430,7 @@ Full-featured Emacs integration for the lab.
 
 ```elisp
 (use-package hydramesh
-  :load-path "/path/to/ai-agents-lab/emacs"
+  :load-path "/path/to/SiegeWare/emacs"
   :bind ("C-c H" . hydramesh)
   :custom
   (hydramesh-home "/opt/hydramesh"))
@@ -466,7 +466,7 @@ M-x hydramesh-docker-logs    ; View service logs
 
 ## 🔗 HydraMesh Integration
 
-The lab integrates [HydraMesh](https://github.com/ALH477/DeMoD-Communication-Framework), a high-performance Lisp-based communication framework, for real-time agent coordination.
+The lab integrates the lisp [HydraMesh](https://github.com/ALH477/DeMoD-Communication-Framework), a high-performance Lisp-based communication framework, for real-time agent coordination with Emacs support for an easier iterface than direct terminal for now.
 
 ### Architecture
 
@@ -576,7 +576,7 @@ HydraMesh uses StreamDB for persistent storage:
 ```python
 from agent_tools.hydramesh import StreamDB
 
-db = StreamDB("/var/lib/ai-agents-lab/hydramesh.db")
+db = StreamDB("/var/lib/SiegeWare/hydramesh.db")
 
 # Store data
 db.insert("agent:red:state", '{"position": [100, 50, 25]}')
